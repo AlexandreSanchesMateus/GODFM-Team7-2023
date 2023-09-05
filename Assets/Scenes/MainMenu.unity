@@ -167,6 +167,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 08a65cf0ddc2db5429d3df8f4ea505a4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _transitionAnimator: {fileID: 0}
+  transitionTime: 0
 --- !u!1 &1182439637
 GameObject:
   m_ObjectHideFlags: 0
@@ -328,4 +330,30 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7b5ea976662efa04a8648aa045e90791, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _setupPlayers: []
+  _color1:
+    serializedVersion: 2
+    rgba: 0
+  _color2:
+    serializedVersion: 2
+    rgba: 0
+  _color3:
+    serializedVersion: 2
+    rgba: 0
+  _color4:
+    serializedVersion: 2
+    rgba: 0
+  _setupPlayers:
+  - _buttonInverted: 0
+    _colorLeft: 0
+    _keyLeft: 0
+    _colorRight: 0
+    _keyRighr: 0
+    _colorVerticale: 0
+    _keyVerticale: 0
+  - _buttonInverted: 0
+    _colorLeft: 0
+    _keyLeft: 0
+    _colorRight: 0
+    _keyRighr: 0
+    _colorVerticale: 0
+    _keyVerticale: 0
