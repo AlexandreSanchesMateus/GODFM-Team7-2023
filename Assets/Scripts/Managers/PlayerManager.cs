@@ -1,7 +1,5 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using UnityEditor.TerrainTools;
 using UnityEngine;
 
 public class PlayerManager : MonoBehaviour
@@ -30,10 +28,12 @@ public class PlayerManager : MonoBehaviour
         YELLOW
     }
 
-    [System.Serializable]
+    [Serializable]
     public class PlayerInfo
     {
         public int ID { get; private set; }
+        public Dictionary<KeyCode, EPlayerColor> KeyColorDic { get; private set; }
+
 
         [SerializeField] private bool _buttonInverted;
 
@@ -43,13 +43,21 @@ public class PlayerManager : MonoBehaviour
 
         [Header("RIght Button")]
         [SerializeField] private EPlayerColor _colorRight;
-        [SerializeField] private KeyCode _keyRighr;
+        [SerializeField] private KeyCode _keyRight;
 
-        [Header("Verticale Button")]
+        [Header("Vertical Button")]
         [SerializeField] private EPlayerColor _colorVerticale;
         [SerializeField] private KeyCode _keyVerticale;
 
+
         public void SetPlayerID(int newId) => ID = newId;
+
+        public void SetKeyColorDic()
+        {
+            KeyColorDic = new() {
+                { _keyLeft, _colorLeft}, {_keyRight, _colorRight}, {_keyVerticale, _colorVerticale}};
+
+        }
     }
     #endregion
 
@@ -65,11 +73,14 @@ public class PlayerManager : MonoBehaviour
             Instance = this;
             DontDestroyOnLoad(gameObject);
 
-            // Initialisation player's ID
+            // Initialisation player's ID and keyColorDic
             for (int i = 0; i < _setupPlayers.Count; i++)
             {
-                _setupPlayers[i].SetPlayerID(i);
+                PlayerInfo playerInfo = _setupPlayers[i];
+                playerInfo.SetPlayerID(i);
+                playerInfo.SetKeyColorDic();
             }
+            
         }
     }
     #endregion
