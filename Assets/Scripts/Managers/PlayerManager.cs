@@ -1,5 +1,7 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor.TerrainTools;
 using UnityEngine;
 
 public class PlayerManager : MonoBehaviour
@@ -7,24 +9,24 @@ public class PlayerManager : MonoBehaviour
     #region Variables
     private static PlayerManager Instance;
 
-    public static Color32 ColorBlue => Instance._color1;
-    public static Color32 ColorRed => Instance._color2;
-    public static Color32 ColorGreen => Instance._color3;
-    public static Color32 ColorYellow => Instance._color4;
-    private static List<PlayerInfo> PlayerInfos => Instance._setupPlayers;
+    public static Color32 ColorBlue => Instance._blue;
+    public static Color32 ColorRed => Instance._red;
+    public static Color32 ColorGreen => Instance._green;
+    public static Color32 ColorYellow => Instance._yellow;
+    public static List<PlayerInfo> PlayerInfos => Instance._setupPlayers;
 
     [Header("Color Reference")]
-    [SerializeField] private Color32 _color1;
-    [SerializeField] private Color32 _color2;
-    [SerializeField] private Color32 _color3;
-    [SerializeField] private Color32 _color4;
+    [SerializeField] private Color32 _blue;
+    [SerializeField] private Color32 _red;
+    [SerializeField] private Color32 _green;
+    [SerializeField] private Color32 _yellow;
     [SerializeField] private List<PlayerInfo> _setupPlayers;
 
     public enum EPlayerColor
     {
         BLUE,
-        GREEN,
         RED,
+        GREEN,
         YELLOW
     }
 
