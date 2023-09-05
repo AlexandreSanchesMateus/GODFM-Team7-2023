@@ -7,17 +7,20 @@ using UnityEngine.InputSystem;
 public class PlayerScript : MonoBehaviour
 {
     [SerializeField] private String PlayerName;
-    private List<PlayerManager.EPlayerColor> inputPlayer;
+    private List<PlayerManager.EPlayerColor> inputPlayer = new(3);
 
+    [SerializeField]
     private PlayerManager.PlayerInfo _playerInfo;
 
-    public int ID => _playerInfo.ID;
+    [SerializeField] private int playerId;
+
     
     
     // Start is called before the first frame update
     void Start()
     {
-        
+        // _playerInfo = PlayerManager.PlayerInfos[playerId];   doesn't seem to work
+        _playerInfo.SetKeyColorDic();
     }
 
     // Update is called once per frame
@@ -25,16 +28,23 @@ public class PlayerScript : MonoBehaviour
     {
         foreach (KeyCode keyCode in _playerInfo.KeyColorDic.Keys.ToArray())
         {
+            if (!_playerInfo.KeyColorDic.Keys.Contains(keyCode))
+            {
+                return;
+            }
+            
             PlayerManager.EPlayerColor inputColor = _playerInfo.KeyColorDic[keyCode];
 
             if (Input.GetKeyDown(keyCode))
             {
                 inputPlayer.Add(inputColor);
+                // Debug.Log($"Pressed color '{inputColor}' of player '{PlayerName}'");
                 //OnInputDetected(inputColor);
             }
 
             if (Input.GetKeyUp(keyCode))
             {
+                // Debug.Log($"unPressed color '{inputColor}' of player '{PlayerName}'");
                 inputPlayer.Remove(inputColor);
             }
             
