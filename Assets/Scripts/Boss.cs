@@ -20,15 +20,21 @@ public class Boss : MonoBehaviour
     private EBossState _currentState;
     private EBossState _previousState;
     private float _attackSpeed;
+    private Animator _bossAnimator;
 
     [SerializeField] private float _delayBetweenAttack;
 
-    void Start()
+    private void Awake()
+    {
+        _bossAnimator = gameObject.GetComponent<Animator>();
+    }
+
+    private void Start()
     {
         _currentState = EBossState.NONE;
     }
 
-    void Update()
+    private void Update()
     {
         if (_previousState == _currentState) return;
 
@@ -51,6 +57,9 @@ public class Boss : MonoBehaviour
                 break;
 
             case EBossState.VULNERABLE:
+                break;
+
+            case EBossState.RECOVER:
                 break;
 
             case EBossState.DEATH:
