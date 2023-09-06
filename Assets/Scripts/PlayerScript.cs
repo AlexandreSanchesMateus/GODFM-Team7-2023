@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.UI;
 
 public class PlayerScript : MonoBehaviour
 {
@@ -27,7 +28,9 @@ public class PlayerScript : MonoBehaviour
     private int frameCount;
 
     public GameObject shotPrefab;
-    public Transform target;
+    public RectTransform target;
+    [SerializeField] private Transform laserParent;
+    private RectTransform _rectTransform;
 
 
     // Start is called before the first frame update
@@ -37,6 +40,7 @@ public class PlayerScript : MonoBehaviour
         //_playerInfo.SetKeyColorDic();
         shotTimer = TimeBetweenShots;
         frameCount = FramesBetweenShots;
+        _rectTransform = GetComponent<RectTransform>();
     }
 
     // Update is called once per frame
@@ -127,14 +131,23 @@ public class PlayerScript : MonoBehaviour
     void OnInputDetected(PlayerManager.EPlayerColor inputColor)
     {
         Color32 color = GetInputColor(inputColor);
-        
 
-        Vector3 PivotPoint = (transform.position - target.position)/2;
+        Vector3 selfPos = _rectTransform.position;
+        Vector3 targetPos = target.position;
         
-        Quaternion angle = Quaternion.AngleAxis(Mathf.Atan2(PivotPoint.y, PivotPoint.x) * Mathf.Rad2Deg, Vector3.forward);
+        Debug.Log($"SelfPos:{selfPos} ||targetPos:{targetPos}");
         
-        GameObject go = Instantiate(shotPrefab, PivotPoint, angle);
-        go.GetComponent<SpriteRenderer>().color = color;
+        Vector3 direction =  selfPos - targetPos;
+        float distance = direction.magnitude;
+        direction /= distance;
+        Debug.Log($"Distance:{distance}");
+        
+        Quaternion angle = Quaternion.AngleAxis(Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg, Vector3.forward);
+        
+        GameObject go = Instantiate(shotPrefab, selfPos, angle, laserParent);
+        go.GetComponent<Image>().color = color;
+        RectTransform rect = go.GetComponent<RectTransform>();
+        rect.sizeDelta = new Vector2(rect.sizeDelta.x, distance);
         StartCoroutine(DestroyShot(go));
     }
 
