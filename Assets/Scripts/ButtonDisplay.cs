@@ -23,6 +23,14 @@ public class ButtonDisplay : MonoBehaviour
         _activeBotton.Item1 = false;
     }
 
+    [ContextMenu("Activate All Buttons")]
+    public void ActivateAllButtons()
+    {
+        _buttonsAnimator.SetBool("LButton", true);
+        _buttonsAnimator.SetBool("RButton", true);
+        _buttonsAnimator.SetBool("VButton", true);
+    }
+
     public void SetLeftButton(bool setAvtive)
     {
         _activeBotton.Item1 = setAvtive;

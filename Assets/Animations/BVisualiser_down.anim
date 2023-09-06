@@ -6,7 +6,7 @@ AnimationClip:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: BVisualiser_L
+  m_Name: BVisualiser_down
   serializedVersion: 7
   m_Legacy: 0
   m_Compressed: 0
@@ -42,7 +42,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_AnchoredPosition.x
-    path: LeftButton
+    path: VerticalButton
     classID: 224
     script: {fileID: 0}
   - curve:
@@ -70,7 +70,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_AnchoredPosition.y
-    path: LeftButton
+    path: VerticalButton
     classID: 224
     script: {fileID: 0}
   m_PPtrCurves: []
@@ -82,7 +82,7 @@ AnimationClip:
   m_ClipBindingConstant:
     genericBindings:
     - serializedVersion: 2
-      path: 4080213535
+      path: 252162684
       attribute: 538195251
       script: {fileID: 0}
       typeID: 224
@@ -90,7 +90,7 @@ AnimationClip:
       isPPtrCurve: 0
       isIntCurve: 0
     - serializedVersion: 2
-      path: 4080213535
+      path: 252162684
       attribute: 1460864421
       script: {fileID: 0}
       typeID: 224
@@ -144,7 +144,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_AnchoredPosition.x
-    path: LeftButton
+    path: VerticalButton
     classID: 224
     script: {fileID: 0}
   - curve:
@@ -172,7 +172,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_AnchoredPosition.y
-    path: LeftButton
+    path: VerticalButton
     classID: 224
     script: {fileID: 0}
   m_EulerEditorCurves: []
