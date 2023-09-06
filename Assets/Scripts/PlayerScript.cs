@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -7,25 +8,55 @@ using UnityEngine.InputSystem;
 public class PlayerScript : MonoBehaviour
 {
     [SerializeField] private String PlayerName;
-    private List<PlayerManager.EPlayerColor> inputPlayer = new(3);
-
-    [SerializeField]
+    private List<PlayerManager.EPlayerColor> _pressedColors = new(3);
+    
     private PlayerManager.PlayerInfo _playerInfo;
 
     [SerializeField] private int playerId;
 
-    
-    
+    // To be able to put cooldown on presses
+    // Should be handled by gamemanager imo to be able to easely use game state
+    public bool useFrames = false;
+    public int FramesBetweenShots;
+    public int TimeBetweenShots;
+
+    private float timer;
+    private int frameCount;
+
+    public GameObject shotPrefab;
+    public Transform target;
+
+
     // Start is called before the first frame update
     void Start()
     {
-        // _playerInfo = PlayerManager.PlayerInfos[playerId];   doesn't seem to work
-        _playerInfo.SetKeyColorDic();
+         _playerInfo = PlayerManager.PlayerInfos[playerId];   //doesn't seem to work
+        //_playerInfo.SetKeyColorDic();
+        timer = TimeBetweenShots;
+        frameCount = FramesBetweenShots;
     }
 
     // Update is called once per frame
     void Update()
     {
+        bool canPress = false;
+        if (useFrames)
+        {
+            frameCount++;
+            if (frameCount >= FramesBetweenShots)
+            {
+                canPress = true;
+            }
+        }
+        else
+        {
+            timer += Time.deltaTime;
+            if (timer >= TimeBetweenShots)
+            {
+                canPress = true;
+            }
+        }
+
         foreach (KeyCode keyCode in _playerInfo.KeyColorDic.Keys.ToArray())
         {
             if (!_playerInfo.KeyColorDic.Keys.Contains(keyCode))
@@ -33,22 +64,37 @@ public class PlayerScript : MonoBehaviour
                 return;
             }
             
-            PlayerManager.EPlayerColor inputColor = _playerInfo.KeyColorDic[keyCode];
-
-            if (Input.GetKeyDown(keyCode))
+            PlayerManager.EPlayerColor keycodeColor = _playerInfo.KeyColorDic[keyCode];
+            
+            if (canPress && Input.GetKeyDown(keyCode))
             {
-                inputPlayer.Add(inputColor);
+                _pressedColors.Add(keycodeColor);
+                if (useFrames)
+                {
+                    frameCount = 0;
+                }
+                else
+                {
+                    timer = 0;
+                }
+                    
                 // Debug.Log($"Pressed color '{inputColor}' of player '{PlayerName}'");
-                //OnInputDetected(inputColor);
+                OnInputDetected(keycodeColor);
             }
 
             if (Input.GetKeyUp(keyCode))
             {
                 // Debug.Log($"unPressed color '{inputColor}' of player '{PlayerName}'");
-                inputPlayer.Remove(inputColor);
+                _pressedColors.Remove(keycodeColor);
             }
-            
         }
+        
+        if (_pressedColors.Count != 0)
+        {
+            PlayerManager.EPlayerColor lastPressedInput = _pressedColors[0];
+            // Debug.Log($"Button still pressed color '{lastPressedInput}' of player '{PlayerName}'");
+        }
+
     }
 
     Color32 GetInputColor(PlayerManager.EPlayerColor inputColor)
@@ -68,8 +114,24 @@ public class PlayerScript : MonoBehaviour
         throw new Exception("Wrong Input Color");
     }
 
-    void OnInputDetected(PlayerManager.EPlayerColor color)
+    void OnInputDetected(PlayerManager.EPlayerColor inputColor)
     {
+        Color32 color = GetInputColor(inputColor);
         
+
+        Vector3 PivotPoint = (transform.position - target.position)/2;
+        
+        Quaternion angle = Quaternion.AngleAxis(Mathf.Atan2(PivotPoint.y, PivotPoint.x) * Mathf.Rad2Deg, Vector3.forward);
+        
+        GameObject go = Instantiate(shotPrefab, PivotPoint, angle);
+        go.GetComponent<SpriteRenderer>().color = color;
+        StartCoroutine(DestroyShot(go));
     }
+
+    IEnumerator DestroyShot(GameObject go)
+    {
+        yield return new WaitForSeconds(1);
+        Destroy(go);
+    }
+
 }
