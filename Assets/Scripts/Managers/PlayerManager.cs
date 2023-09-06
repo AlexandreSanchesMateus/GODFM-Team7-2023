@@ -38,6 +38,7 @@ public class PlayerManager : MonoBehaviour
     {
         public int ID { get; private set; }
         public Dictionary<KeyCode, EButtonColor> KeyColorDic { get; private set; }
+        public Dictionary<KeyCode, string> KeyPosDic { get; private set; }
 
         [SerializeField] private bool _buttonInverted;
 
@@ -45,7 +46,7 @@ public class PlayerManager : MonoBehaviour
         [SerializeField] private EButtonColor _colorLeft;
         [SerializeField] private KeyCode _keyLeft;
 
-        [Header("RIght Button")]
+        [Header("Right Button")]
         [SerializeField] private EButtonColor _colorRight;
         [SerializeField] private KeyCode _keyRight;
 
@@ -63,8 +64,16 @@ public class PlayerManager : MonoBehaviour
                 {_keyRight, _colorRight},
                 {_keyVerticale,_colorVerticale}
             };
-
         }
+        public void SetKeyPosDic()
+        {
+            KeyPosDic = new() {
+                { _keyLeft, "Left"},
+                {_keyRight, "Right"},
+                {_keyVerticale,"Vertical"}
+            };
+        }
+        
     }
     #endregion
 
@@ -86,6 +95,7 @@ public class PlayerManager : MonoBehaviour
                 PlayerInfo playerInfo = _setupPlayers[i];
                 playerInfo.SetPlayerID(i);
                 playerInfo.SetKeyColorDic();
+                playerInfo.SetKeyPosDic();
             }
             
         }

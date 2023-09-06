@@ -209,6 +209,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _travelDuration: 0
+  images:
+  - {fileID: 2960957302400709785}
+  - {fileID: 2960957304042736294}
+  - {fileID: 2960957302952247899}
 --- !u!95 &9050865317830036573
 Animator:
   serializedVersion: 4

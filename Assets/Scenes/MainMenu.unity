@@ -773,6 +773,7 @@ MonoBehaviour:
   - {fileID: 5085094299105360527}
   - {fileID: 1859556313}
   - {fileID: 796239738}
+  readyTime: 2
 --- !u!1 &1182439637
 GameObject:
   m_ObjectHideFlags: 0
@@ -1071,11 +1072,11 @@ MonoBehaviour:
     rgba: 4278248191
   _setupPlayers:
   - _buttonInverted: 0
-    _colorLeft: 0
+    _colorLeft: 3
     _keyLeft: 256
-    _colorRight: 0
+    _colorRight: 1
     _keyRight: 257
-    _colorVerticale: 0
+    _colorVerticale: 2
     _keyVerticale: 258
   - _buttonInverted: 0
     _colorLeft: 0
@@ -1084,6 +1085,20 @@ MonoBehaviour:
     _keyRight: 260
     _colorVerticale: 0
     _keyVerticale: 261
+  - _buttonInverted: 0
+    _colorLeft: 0
+    _keyLeft: 262
+    _colorRight: 1
+    _keyRight: 263
+    _colorVerticale: 2
+    _keyVerticale: 264
+  - _buttonInverted: 0
+    _colorLeft: 0
+    _keyLeft: 267
+    _colorRight: 1
+    _keyRight: 268
+    _colorVerticale: 3
+    _keyVerticale: 269
 --- !u!1 &1591347037
 GameObject:
   m_ObjectHideFlags: 0
