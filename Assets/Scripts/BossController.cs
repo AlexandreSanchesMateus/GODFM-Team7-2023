@@ -39,7 +39,7 @@ public class BossController : MonoBehaviour
     [Header("UI")]
     [SerializeField] private Image _imgHypnoLevel;
     [SerializeField] private TextMeshProUGUI _textTimer;
-
+    [SerializeField] private List<Image> _bossEyes;
     [Header("General Settings")]
     [SerializeField] private int _maxHypnoLevel;
     [SerializeField, Tooltip("Value 1 correspond to the gain of 1 hypnitic level every seconds.")] private float _hypnoLevelSpeed = 1;
@@ -190,6 +190,7 @@ public class BossController : MonoBehaviour
             int random = Random.Range(0, colorPossible.Count);
             colorPossible.RemoveAt(random);
             colorSelected[i] = colorPossible[random];
+            _bossEyes[i].color = PlayerManager.GetInputColor(colorSelected[i]);
         }
     }
 
