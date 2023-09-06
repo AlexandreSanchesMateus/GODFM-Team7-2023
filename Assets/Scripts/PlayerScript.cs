@@ -8,95 +8,67 @@ using UnityEngine.UI;
 
 public class PlayerScript : MonoBehaviour
 {
-    [SerializeField] private String PlayerName;
-    private List<PlayerManager.EPlayerColor> _pressedColors = new(3);
-    
-    private PlayerManager.PlayerInfo _playerInfo;
-
     [SerializeField] private int playerId;
+
+    private PlayerManager.PlayerInfo _playerInfo;
+    private List<EButtonColor> _pressedColors = new(3);
 
     // To be able to put cooldown on presses
     // Should be handled by gamemanager imo to be able to easely use game state
-    public bool useFrames = false;
-    public int FramesBetweenShots;
-    public int TimeBetweenShots;
+    [SerializeField] private int DisqueAttackDeltaTime;
+    private int TimeBetweenShots = 0;
 
-    public float TimeBeforeHold = 0.2f; // Time before input is detected as held
+    [SerializeField] private float TimeBeforeHold = 0.2f; // Time before input is detected as held
 
     private float shotTimer;
     private float holdTimer;
-    private int frameCount;
 
-    public GameObject shotPrefab;
-    public RectTransform target;
+    [SerializeField] private GameObject shotPrefab;
+    [SerializeField] private GameObject target;
     [SerializeField] private Transform laserParent;
-    private RectTransform _rectTransform;
 
+    private Image LineRenderer;
 
     // Start is called before the first frame update
     void Start()
     {
          _playerInfo = PlayerManager.PlayerInfos[playerId];   //doesn't seem to work
-        //_playerInfo.SetKeyColorDic();
         shotTimer = TimeBetweenShots;
-        frameCount = FramesBetweenShots;
-        _rectTransform = GetComponent<RectTransform>();
     }
 
     // Update is called once per frame
     void Update()
     {
         bool canPress = false;
-        if (useFrames)
+        shotTimer += Time.deltaTime;
+        if (shotTimer >= TimeBetweenShots)
         {
-            frameCount++;
-            if (frameCount >= FramesBetweenShots)
-            {
-                canPress = true;
-            }
+            canPress = true;
         }
-        else
-        {
-            shotTimer += Time.deltaTime;
-            if (shotTimer >= TimeBetweenShots)
-            {
-                canPress = true;
-            }
-        }
+
+        if (!canPress) return;
 
         foreach (KeyCode keyCode in _playerInfo.KeyColorDic.Keys.ToArray())
         {
-            if (!_playerInfo.KeyColorDic.Keys.Contains(keyCode))
-            {
-                return;
-            }
-            
-            PlayerManager.EPlayerColor keycodeColor = _playerInfo.KeyColorDic[keyCode];
-            
+            EButtonColor keycodeColor = _playerInfo.KeyColorDic[keyCode];
+
             if (canPress && Input.GetKeyDown(keyCode))
             {
+                shotTimer = 0;
                 _pressedColors.Add(keycodeColor);
-                if (useFrames)
-                {
-                    frameCount = 0;
-                }
-                else
-                {
-                    shotTimer = 0;
-                }
-                    
-                // Debug.Log($"Pressed color '{inputColor}' of player '{PlayerName}'");
-                OnInputDetected(keycodeColor);
+
+                ProcessInput(true, keycodeColor);
             }
 
             if (Input.GetKeyUp(keyCode))
             {
-                // Debug.Log($"unPressed color '{keycodeColor}' of player '{PlayerName}'");
-                _pressedColors.Remove(keycodeColor);
                 holdTimer = 0;
+                _pressedColors.Remove(keycodeColor);
+
+                ProcessInput(false, keycodeColor);
             }
         }
-        
+
         if (_pressedColors.Count != 0)
         {
             if (holdTimer < TimeBeforeHold)
@@ -104,36 +76,56 @@ public class PlayerScript : MonoBehaviour
                 holdTimer += Time.deltaTime;
                 return;
             }
-            
-            PlayerManager.EPlayerColor lastPressedInput = _pressedColors[0];
-            Debug.Log($"Button still pressed color '{lastPressedInput}' of player '{PlayerName}'");
-        }
 
+            EButtonColor lastPressedInput = _pressedColors[0];
+        }
     }
 
-    Color32 GetInputColor(PlayerManager.EPlayerColor inputColor)
+    private void ProcessInput(bool isPressed, EButtonColor color)
     {
-        switch (inputColor)
+        if(isPressed)
+            ShowColorInput(color);
+
+        switch (BossController.CurrentState)
         {
-            case PlayerManager.EPlayerColor.RED:
-                return PlayerManager.ColorRed;
-            case PlayerManager.EPlayerColor.BLUE:
-                return PlayerManager.ColorBlue;
-            case PlayerManager.EPlayerColor.GREEN:
-                return PlayerManager.ColorGreen;
-            case PlayerManager.EPlayerColor.YELLOW:
-                return PlayerManager.ColorYellow;
-        }
+            case BossController.EBossState.ATTACK_DISQUE:
+                TimeBetweenShots = DisqueAttackDeltaTime;
+                if(isPressed)
+                    BossController.OnPlayerInput(playerId, color);
+                else
+                {
+                    BossController.OnPlayerInput(playerId, EButtonColor.NONE);
+                    DestroyColorInput();
+                }
+                break;
 
-        throw new Exception("Wrong Input Color");
+            case BossController.EBossState.VULNERABLE:
+                TimeBetweenShots = 0;
+                break;
+
+            default:
+                if (_pressedColors.Count == 0)
+                    DestroyColorInput();
+                else if(LineRenderer != null)
+                    LineRenderer.color = PlayerManager.GetInputColor(_pressedColors[_pressedColors.Count - 1]);
+                break;
+        }
     }
 
-    void OnInputDetected(PlayerManager.EPlayerColor inputColor)
+    private void DestroyColorInput()
     {
-        Color32 color = GetInputColor(inputColor);
+        if (LineRenderer == null) return;
 
-        Vector3 selfPos = _rectTransform.position;
-        Vector3 targetPos = target.position;
+        // Animation
+        Destroy(LineRenderer.gameObject);
+    }
+
+    private void ShowColorInput(EButtonColor inputColor)
+    {
+        Color32 color = PlayerManager.GetInputColor(inputColor);
+
+        Vector3 selfPos = gameObject.transform.position;
+        Vector3 targetPos = target.transform.position;
         
         Debug.Log($"SelfPos:{selfPos} ||targetPos:{targetPos}");
         
@@ -143,18 +135,10 @@ public class PlayerScript : MonoBehaviour
         Debug.Log($"Distance:{distance}");
         
         Quaternion angle = Quaternion.AngleAxis(Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg, Vector3.forward);
-        
-        GameObject go = Instantiate(shotPrefab, selfPos, angle, laserParent);
-        go.GetComponent<Image>().color = color;
-        RectTransform rect = go.GetComponent<RectTransform>();
+
+        LineRenderer = Instantiate(shotPrefab, selfPos, angle, laserParent).GetComponent<Image>();
+        LineRenderer.color = color;
+        RectTransform rect = LineRenderer.GetComponent<RectTransform>();
         rect.sizeDelta = new Vector2(rect.sizeDelta.x, distance);
-        StartCoroutine(DestroyShot(go));
     }
-
-    IEnumerator DestroyShot(GameObject go)
-    {
-        yield return new WaitForSeconds(0.2f);
-        Destroy(go);
-    }
-
 }

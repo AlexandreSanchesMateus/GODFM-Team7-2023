@@ -2,6 +2,17 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
+
+
+public enum EButtonColor
+{
+    BLUE,
+    RED,
+    GREEN,
+    YELLOW,
+    NONE,
+}
+
 public class PlayerManager : MonoBehaviour
 {
     #region Variables
@@ -20,33 +31,26 @@ public class PlayerManager : MonoBehaviour
     [SerializeField] private Color32 _yellow;
     [SerializeField] private List<PlayerInfo> _setupPlayers;
 
-    public enum EPlayerColor
-    {
-        BLUE,
-        RED,
-        GREEN,
-        YELLOW
-    }
+    
 
     [Serializable]
     public class PlayerInfo
     {
         public int ID { get; private set; }
-        public Dictionary<KeyCode, EPlayerColor> KeyColorDic { get; private set; }
-
+        public Dictionary<KeyCode, EButtonColor> KeyColorDic { get; private set; }
 
         [SerializeField] private bool _buttonInverted;
 
         [Header("Left Button")]
-        [SerializeField] private EPlayerColor _colorLeft;
+        [SerializeField] private EButtonColor _colorLeft;
         [SerializeField] private KeyCode _keyLeft;
 
         [Header("RIght Button")]
-        [SerializeField] private EPlayerColor _colorRight;
+        [SerializeField] private EButtonColor _colorRight;
         [SerializeField] private KeyCode _keyRight;
 
         [Header("Vertical Button")]
-        [SerializeField] private EPlayerColor _colorVerticale;
+        [SerializeField] private EButtonColor _colorVerticale;
         [SerializeField] private KeyCode _keyVerticale;
 
 
@@ -55,7 +59,10 @@ public class PlayerManager : MonoBehaviour
         public void SetKeyColorDic()
         {
             KeyColorDic = new() {
-                { _keyLeft, _colorLeft}, {_keyRight, _colorRight}, {_keyVerticale, _colorVerticale}};
+                { _keyLeft, _colorLeft},
+                {_keyRight, _colorRight},
+                {_keyVerticale,_colorVerticale}
+            };
 
         }
     }
@@ -84,4 +91,21 @@ public class PlayerManager : MonoBehaviour
         }
     }
     #endregion
+
+    public static Color32 GetInputColor(EButtonColor inputColor)
+    {
+        switch (inputColor)
+        {
+            case EButtonColor.RED:
+                return PlayerManager.ColorRed;
+            case EButtonColor.BLUE:
+                return PlayerManager.ColorBlue;
+            case EButtonColor.GREEN:
+                return PlayerManager.ColorGreen;
+            case EButtonColor.YELLOW:
+                return PlayerManager.ColorYellow;
+        }
+
+        throw new Exception("Wrong Input Color");
+    }
 }

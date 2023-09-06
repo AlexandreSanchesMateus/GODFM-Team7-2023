@@ -6,11 +6,10 @@ using Random = UnityEngine.Random;
 
 public class DiskScript : MonoBehaviour
 {
-
     private static DiskScript Instance;
 
     [SerializeField]
-    public List<PlayerManager.EPlayerColor> vulnColors = new (4);
+    public List<EButtonColor> vulnColors = new (4);
 
     public int diskLevel = 1;
     public int rotationSpeed = -10;
@@ -46,16 +45,16 @@ public class DiskScript : MonoBehaviour
         {
             switch (vulnColors[index])
             {
-                case PlayerManager.EPlayerColor.BLUE:
+                case EButtonColor.BLUE:
                     _renderer.color = PlayerManager.ColorBlue;
                     break;
-                case PlayerManager.EPlayerColor.RED:
+                case EButtonColor.RED:
                     _renderer.color = PlayerManager.ColorRed;
                     break;
-                case PlayerManager.EPlayerColor.GREEN:
+                case EButtonColor.GREEN:
                     _renderer.color = PlayerManager.ColorGreen;
                     break;
-                case PlayerManager.EPlayerColor.YELLOW:
+                case EButtonColor.YELLOW:
                     _renderer.color = PlayerManager.ColorYellow;
                     break;
             }
@@ -82,13 +81,13 @@ public class DiskScript : MonoBehaviour
         for (int i = 0; i < 4; i++)
         {
             int rand = Random.Range(0, 4);
-            PlayerManager.EPlayerColor selectedColor = (PlayerManager.EPlayerColor)rand;
+            EButtonColor selectedColor = (EButtonColor)rand;
             while (vulnColors.FindAll(x => x == selectedColor).Count == 3)
             {
                 rand = Random.Range(0, 4);
-                selectedColor = (PlayerManager.EPlayerColor)rand;
+                selectedColor = (EButtonColor)rand;
             }
-            vulnColors.Add((PlayerManager.EPlayerColor)rand);
+            vulnColors.Add((EButtonColor)rand);
         }
     }
 
@@ -98,7 +97,7 @@ public class DiskScript : MonoBehaviour
     /// <param name="colors"> List of colors sent by the player </param>
     /// <param name="autoRefresh"> Whether or not to automatically change colors </param>
     /// <returns></returns>
-    public static bool OnPlayerShooting(List<PlayerManager.EPlayerColor> colors, bool autoRefresh)
+    public static bool OnPlayerShooting(List<EButtonColor> colors, bool autoRefresh)
     {
         colors.Sort();
         Instance.vulnColors.Sort();

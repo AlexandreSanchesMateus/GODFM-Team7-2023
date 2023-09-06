@@ -25,8 +25,8 @@ public class BossController : MonoBehaviour
     private Animator _bossAnimator;
 
     // Attack
-    private List<PlayerManager.EPlayerColor> currentPlayersInput;
-    PlayerManager.EPlayerColor[] colorSelected = new PlayerManager.EPlayerColor[4];
+    private List<EButtonColor> currentPlayersInput;
+    EButtonColor[] colorSelected = new EButtonColor[4];
 
     private float _currentPV;
 
@@ -59,7 +59,7 @@ public class BossController : MonoBehaviour
     {
         _bossAnimator = gameObject.GetComponent<Animator>();
 
-        currentPlayersInput = new List<PlayerManager.EPlayerColor>(PlayerManager.PlayerInfos.Count);
+        currentPlayersInput = new List<EButtonColor>(PlayerManager.PlayerInfos.Count);
         _healthBar.InitializeHealthBar(_maxPv);
         _currentState = EBossState.NONE;
     }
@@ -139,9 +139,9 @@ public class BossController : MonoBehaviour
     }
     #endregion
 
-    public static void OnPlayerInput(int playerId, bool isPressed, PlayerManager.EPlayerColor color)
+    public static void OnPlayerInput(int playerId, EButtonColor color)
     {
-        // Instance.currentPlayersInput[1] = isPressed ? color : PlayerManager.EPlayerColor.NONE;
+        Instance.currentPlayersInput[1] = color;
         switch (Instance._currentState)
         {
             case EBossState.ATTACK_DISQUE:
@@ -177,12 +177,12 @@ public class BossController : MonoBehaviour
     #region Attack Types
     private void InitDisqueAttack()
     {
-        PlayerManager.EPlayerColor[] colorSelected = new PlayerManager.EPlayerColor[4];
-        List<PlayerManager.EPlayerColor> colorPossible = new List<PlayerManager.EPlayerColor>{
-            PlayerManager.EPlayerColor.BLUE, PlayerManager.EPlayerColor.BLUE,
-            PlayerManager.EPlayerColor.GREEN, PlayerManager.EPlayerColor.GREEN,
-            PlayerManager.EPlayerColor.RED, PlayerManager.EPlayerColor.RED,
-            PlayerManager.EPlayerColor.YELLOW, PlayerManager.EPlayerColor.YELLOW,
+        EButtonColor[] colorSelected = new EButtonColor[4];
+        List<EButtonColor> colorPossible = new List<EButtonColor>{
+            EButtonColor.BLUE, EButtonColor.BLUE,
+            EButtonColor.GREEN, EButtonColor.GREEN,
+            EButtonColor.RED, EButtonColor.RED,
+            EButtonColor.YELLOW, EButtonColor.YELLOW,
         };
 
         for (int i = 0; i < 4; i++)
@@ -195,8 +195,8 @@ public class BossController : MonoBehaviour
 
     private void CheckDestroyDisque()
     {
-        List<PlayerManager.EPlayerColor> playedColor = new List<PlayerManager.EPlayerColor>(colorSelected);
-        foreach(PlayerManager.EPlayerColor color in currentPlayersInput)
+        List<EButtonColor> playedColor = new List<EButtonColor>(colorSelected);
+        foreach(EButtonColor color in currentPlayersInput)
         {
             /*if (color == PlayerManager.EPlayerColor.NONE)
                 return;*/
