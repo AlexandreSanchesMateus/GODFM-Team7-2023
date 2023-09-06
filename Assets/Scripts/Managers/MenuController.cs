@@ -1,169 +1,165 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.InputSystem;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
-public class MenuController : MonoBehaviour
+namespace Managers
 {
-    [SerializeField]
-    private List<ButtonDisplay> ButtonDisplays;
+    public class MenuController : MonoBehaviour
+    {
+        [FormerlySerializedAs("ButtonDisplays")] [SerializeField]
+        private List<ButtonDisplay> buttonDisplays;
 
-    private List<PlayerButton> _playerButtons = new(4);
-    private List<PlayerButton> _playersReady = new(4);
+        private readonly List<PlayerButton> _playerButtons = new(4);
+        private readonly List<PlayerButton> _playersReady = new(4);
 
-    [SerializeField]
-    private float readyTime = 2f;
+        [SerializeField]
+        private float readyTime = 2f;
     
 
-    private void Start()
-    {
-        for (int i = 0; i < 4; i++)
+        private void Start()
         {
-            PlayerManager.PlayerInfo playerInfo = PlayerManager.PlayerInfos[i];
-            
-            ButtonDisplay buttonDisplay = ButtonDisplays[i];
-            
-            _playerButtons.Add(new PlayerButton(playerInfo, buttonDisplay, readyTime));
-        }
-    }
-
-
-    private void Update()
-    {
-        foreach (PlayerButton playerButton in _playerButtons)
-        {
-            // For tests =================================
-            if (_playersReady.Contains(playerButton))
+            for (int i = 0; i < 4; i++)
             {
-                continue;
-            }
-            // ===========================================
-            playerButton.RefreshInputs();
-            if (playerButton.VerifyInputs(Time.deltaTime) && !_playersReady.Contains(playerButton))
-            {
-                _playersReady.Add(playerButton);
+                PlayerManager.PlayerInfo playerInfo = PlayerManager.PlayerInfos[i];
+                ButtonDisplay buttonDisplay = buttonDisplays[i];
+            
+                _playerButtons.Add(new PlayerButton(playerInfo, buttonDisplay, readyTime));
             }
         }
 
-        if (_playersReady.Count >= 4)
+
+        private void Update()
         {
-            // Can Start
-            CustomSceneManager.LoadGame(true);
-        }
-    }
-}
-
-
-class PlayerButton
-{
-    public int PlayerID { get; private set; }
-    public PlayerManager.PlayerInfo info;
-    public ButtonDisplay ButtonDisplay;
-    private List<EButtonColor> _pressedColors = new(3);
-    private Dictionary<KeyCode, Coroutine> coroutines;
-
-    private float readyTimer = 0;
-    private float readyTime;
-
-    public PlayerButton(PlayerManager.PlayerInfo pInfo, ButtonDisplay display, float readyTime)
-    {
-        info = pInfo;
-        ButtonDisplay = display;
-        this.readyTime = readyTime;
-
-        coroutines = new Dictionary<KeyCode, Coroutine>();
-    }
-
-    public void RefreshInputs()
-    {
-        foreach (var keyCode in info.KeyColorDic.Keys)
-        {            
-            EButtonColor keycodeColor = info.KeyColorDic[keyCode];
-            Image img = ButtonDisplay.posImageDic[info.KeyPosDic[keyCode]];
-
-            if (Input.GetKeyDown(keyCode))
+            foreach (PlayerButton playerButton in _playerButtons)
             {
-                switch (info.KeyPosDic[keyCode])
+                // For tests =================================
+                if (_playersReady.Contains(playerButton))
                 {
-                    case "Left":
-                        ButtonDisplay.SetLeftButton(true);
-                        break;
-                    case "Right":
-                        ButtonDisplay.SetRightButton(true);
-                        break;
-                    case "Vertical":
-                        ButtonDisplay.SetVerticalButton(true);
-                        break;
+                    continue;
                 }
+                // ===========================================
+                playerButton.RefreshInputs();
+                if (playerButton.VerifyInputs(Time.deltaTime) && !_playersReady.Contains(playerButton))
+                {
+                    _playersReady.Add(playerButton);
+                }
+            }
+
+            if (_playersReady.Count >= 4)
+            {
+                // Can Start
+                CustomSceneManager.LoadGame(true);
+            }
+        }
+    }
+
+
+    internal class PlayerButton
+    {
+        //public int PlayerID { get; private set; }
+        private readonly PlayerManager.PlayerInfo _info;
+        private readonly ButtonDisplay _buttonDisplay;
+        private readonly List<EButtonColor> _pressedColors = new(3);
+        private readonly Dictionary<KeyCode, Coroutine> _coroutines;
+
+        private float _readyTimer;
+        private readonly float _readyTime;
+
+        public PlayerButton(PlayerManager.PlayerInfo pInfo, ButtonDisplay display, float readyTime)
+        {
+            _info = pInfo;
+            _buttonDisplay = display;
+            _readyTime = readyTime;
+            _coroutines = new Dictionary<KeyCode, Coroutine>();
+        }
+
+        public void RefreshInputs()
+        {
+            foreach (var keyCode in _info.KeyColorDic.Keys)
+            {            
+                EButtonColor keycodeColor = _info.KeyColorDic[keyCode];
+
+                if (Input.GetKeyDown(keyCode))
+                {
+                    SetButtonState(_info.KeyPosDic[keyCode], true);
                 
-                _pressedColors.Add(keycodeColor);
-                Color32 color = PlayerManager.GetInputColor(keycodeColor);
-                if (coroutines.TryGetValue(keyCode, out Coroutine co))
-                {
-                    ButtonDisplay.StopCoroutine(co);
+                    _pressedColors.Add(keycodeColor);
+                    Color32 color = PlayerManager.GetInputColor(keycodeColor);
+                    StartButtonColouring(keyCode, color); // Fade effect of the colour of a button
                 }
-                coroutines[keyCode] = ButtonDisplay.StartCoroutine(ColorButton(img, img.color, color, 2, 0));
-            }
             
-            if (Input.GetKeyUp(keyCode))
-            {
-                switch (info.KeyPosDic[keyCode])
+                if (Input.GetKeyUp(keyCode))
                 {
-                    case "Left":
-                        ButtonDisplay.SetLeftButton(false);
-                        break;
-                    case "Right":
-                        ButtonDisplay.SetRightButton(false);
-                        break;
-                    case "Vertical":
-                        ButtonDisplay.SetVerticalButton(false);
-                        break;
-                }
+                    SetButtonState(_info.KeyPosDic[keyCode], false);
                 
-                _pressedColors.Remove(keycodeColor);
-                if (coroutines.TryGetValue(keyCode, out Coroutine co))
-                {
-                    ButtonDisplay.StopCoroutine(co);
+                    _pressedColors.Remove(keycodeColor);
+                    StartButtonColouring(keyCode, Color.white);
                 }
-                coroutines[keyCode] = ButtonDisplay.StartCoroutine(ColorButton(img, img.color, Color.white, 2, 0));
             }
-            
         }
-    }
-
-    public bool VerifyInputs(float deltaTime)
-    {
-        if (_pressedColors.Count >= 3)
+    
+        public bool VerifyInputs(float deltaTime)
         {
-            readyTimer += deltaTime;
-            if (readyTimer >= readyTime)
+            if (_pressedColors.Count >= 3)
             {
-                return true;
+                _readyTimer += deltaTime;
+                if (_readyTimer >= _readyTime)
+                {
+                    return true;
+                }
+
+                return false;
             }
 
+            _readyTimer = 0;
             return false;
         }
 
-        readyTimer = 0;
-        return false;
-    }
+        private void SetButtonState(string position, bool state)
+        {
+            switch (position)
+            {
+                case "Left":
+                    _buttonDisplay.SetLeftButton(state);
+                    break;
+                case "Right":
+                    _buttonDisplay.SetRightButton(state);
+                    break;
+                case "Vertical":
+                    _buttonDisplay.SetVerticalButton(state);
+                    break;
+            }
+        }
 
-    // time in seconds
-    IEnumerator ColorButton(Image img,Color startColor, Color targetColor, int time, float t)
-    {
-        Color lerpedColor = Color.Lerp(startColor, targetColor, t);
-        img.color = lerpedColor;
-        yield return new WaitForSeconds(0.1f);
-        if (t >= time)
+        private void StartButtonColouring(KeyCode keyCode, Color targetColor)
         {
-            yield return null;
+            Image img = _buttonDisplay.posImageDic[_info.KeyPosDic[keyCode]];
+
+            if (_coroutines.TryGetValue(keyCode, out Coroutine co))
+            {
+                _buttonDisplay.StopCoroutine(co);
+            }
+            _coroutines[keyCode] = _buttonDisplay.StartCoroutine(ColorButton(img, img.color, targetColor, _readyTime, _readyTime / (_readyTime*10)));
         }
-        else
+ 
+        // time in seconds
+        IEnumerator ColorButton(Image img,Color startColor, Color targetColor, float time, float t)
         {
-            // TODO: Coroutines overlaping if released before one ends, Well... actually it could be a feature
-            ButtonDisplay.StartCoroutine(ColorButton(img, startColor, targetColor, time, t + time / 10f));
+            Color lerpedColor = Color.Lerp(startColor, targetColor, t);
+            img.color = lerpedColor;
+            yield return new WaitForSeconds(_readyTime/ (_readyTime*10));
+            if (t >= time)
+            {
+                yield return null;
+            }
+            else
+            {
+                // TODO: Coroutines overlapping if released before one ends, Well... actually it could be a feature
+                _buttonDisplay.StartCoroutine(ColorButton(img, startColor, targetColor, time, t + time / (_readyTime*10)));
+            }
         }
-    }
     
+    }
 }
