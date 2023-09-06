@@ -1,8 +1,7 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Events;
+using UnityEngine.UI;
 
 public class BossController : MonoBehaviour
 {
@@ -26,6 +25,9 @@ public class BossController : MonoBehaviour
     private bool _increaseHypnoLevel = false;
     private float _currentHypnoLevel;
     private float _currentPV;
+
+    [Header("UI")]
+    [SerializeField] private Image _imgHypnoLevel;
 
     [Header("General Settings")]
     [SerializeField] private int _maxHypnoLevel;
@@ -52,9 +54,7 @@ public class BossController : MonoBehaviour
         if (_increaseHypnoLevel)
         {
             _currentHypnoLevel += Time.deltaTime * _hypnoLevelSpeed;
-            
-            // Update Level
-
+            _imgHypnoLevel.fillAmount = _currentHypnoLevel / _maxHypnoLevel;
             CheckHypnoticLevel();
         }
 
@@ -64,7 +64,7 @@ public class BossController : MonoBehaviour
         {
             // Chose the next attack randomly
             case EBossState.CHOSE_ATTACK:
-                StartCoroutine(DelayState((EBossState)UnityEngine.Random.Range(0, 5), _delayBetweenAttack));
+                StartCoroutine(DelayState((EBossState)Random.Range(0, 5), _delayBetweenAttack));
                 break;
 
             // Disque of color
