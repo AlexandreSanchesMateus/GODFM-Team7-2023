@@ -25,7 +25,6 @@ public class PlayerScript : MonoBehaviour
 
     [SerializeField] private GameObject shotPrefab;
     [SerializeField] private GameObject target;
-    [SerializeField] private Transform laserParent;
 
     private Image LineRenderer;
 
@@ -136,7 +135,7 @@ public class PlayerScript : MonoBehaviour
         
         Quaternion angle = Quaternion.AngleAxis(Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg, Vector3.forward);
 
-        LineRenderer = Instantiate(shotPrefab, selfPos, angle, laserParent).GetComponent<Image>();
+        LineRenderer = Instantiate(shotPrefab, selfPos, angle, gameObject.transform).GetComponent<Image>();
         LineRenderer.color = color;
         RectTransform rect = LineRenderer.GetComponent<RectTransform>();
         rect.sizeDelta = new Vector2(rect.sizeDelta.x, distance);
