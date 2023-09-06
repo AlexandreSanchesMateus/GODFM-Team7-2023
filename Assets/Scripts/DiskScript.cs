@@ -7,14 +7,25 @@ using Random = UnityEngine.Random;
 public class DiskScript : MonoBehaviour
 {
 
+    private static DiskScript Instance;
+
     [SerializeField]
     public List<PlayerManager.EPlayerColor> vulnColors = new (4);
 
+    public int diskLevel = 1;
+    public int rotationSpeed = -10;
+    public float rotationAngle = 0;
+    
+    // DEBUG
     private float timer = 1;
-
     private int index;
-
     private SpriteRenderer _renderer;
+
+    private void Awake()
+    {
+        Instance = this;
+    }
+
     // Start is called before the first frame update
     void Start()
     {
@@ -26,6 +37,7 @@ public class DiskScript : MonoBehaviour
     void FixedUpdate()
     {
         PlayDebugAnimation();
+        PlayRotationAnimation(Time.fixedDeltaTime);
     }
 
     void PlayDebugAnimation()
@@ -56,6 +68,13 @@ public class DiskScript : MonoBehaviour
         }
     }
 
+    void PlayRotationAnimation(float deltaTime)
+    {
+        rotationAngle += (deltaTime * rotationSpeed * diskLevel) % 360;
+        Quaternion angle = Quaternion.AngleAxis(rotationAngle, Vector3.forward);
+        transform.rotation = angle;
+    }
+
     [ContextMenu("Init Colors")]
     void InitVulnColors()
     {
@@ -71,6 +90,29 @@ public class DiskScript : MonoBehaviour
             }
             vulnColors.Add((PlayerManager.EPlayerColor)rand);
         }
+    }
+
+    /// <summary>
+    /// Returns True if all colors were matched and false otherwise
+    /// </summary>
+    /// <param name="colors"> List of colors sent by the player </param>
+    /// <param name="autoRefresh"> Whether or not to automatically change colors </param>
+    /// <returns></returns>
+    public static bool OnPlayerShooting(List<PlayerManager.EPlayerColor> colors, bool autoRefresh)
+    {
+        colors.Sort();
+        Instance.vulnColors.Sort();
+        if (colors == Instance.vulnColors)
+        {
+            if (autoRefresh)
+            {
+                Instance.InitVulnColors();
+            }
+
+            Instance.diskLevel++;
+            return true;
+        }
+        return false;
     }
     
 }
