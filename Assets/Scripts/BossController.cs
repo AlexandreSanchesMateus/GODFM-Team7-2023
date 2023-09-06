@@ -139,13 +139,13 @@ public class BossController : MonoBehaviour
     }
     #endregion
 
-    public static void OnPlayerInput(PlayerScript player, bool isPressed, PlayerManager.EPlayerColor color)
+    public static void OnPlayerInput(int playerId, bool isPressed, PlayerManager.EPlayerColor color)
     {
         // Instance.currentPlayersInput[1] = isPressed ? color : PlayerManager.EPlayerColor.NONE;
         switch (Instance._currentState)
         {
             case EBossState.ATTACK_DISQUE:
-                Instance.CheckDestriyDisque();
+                Instance.CheckDestroyDisque();
                 break;
 
             case EBossState.HYPNOTIC_PHASE:
@@ -193,7 +193,7 @@ public class BossController : MonoBehaviour
         }
     }
 
-    private void CheckDestriyDisque()
+    private void CheckDestroyDisque()
     {
         List<PlayerManager.EPlayerColor> playedColor = new List<PlayerManager.EPlayerColor>(colorSelected);
         foreach(PlayerManager.EPlayerColor color in currentPlayersInput)
