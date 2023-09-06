@@ -20,7 +20,10 @@ public class PlayerScript : MonoBehaviour
     public int FramesBetweenShots;
     public int TimeBetweenShots;
 
-    private float timer;
+    public float TimeBeforeHold = 0.2f; // Time before input is detected as held
+
+    private float shotTimer;
+    private float holdTimer;
     private int frameCount;
 
     public GameObject shotPrefab;
@@ -32,7 +35,7 @@ public class PlayerScript : MonoBehaviour
     {
          _playerInfo = PlayerManager.PlayerInfos[playerId];   //doesn't seem to work
         //_playerInfo.SetKeyColorDic();
-        timer = TimeBetweenShots;
+        shotTimer = TimeBetweenShots;
         frameCount = FramesBetweenShots;
     }
 
@@ -50,8 +53,8 @@ public class PlayerScript : MonoBehaviour
         }
         else
         {
-            timer += Time.deltaTime;
-            if (timer >= TimeBetweenShots)
+            shotTimer += Time.deltaTime;
+            if (shotTimer >= TimeBetweenShots)
             {
                 canPress = true;
             }
@@ -75,7 +78,7 @@ public class PlayerScript : MonoBehaviour
                 }
                 else
                 {
-                    timer = 0;
+                    shotTimer = 0;
                 }
                     
                 // Debug.Log($"Pressed color '{inputColor}' of player '{PlayerName}'");
@@ -84,15 +87,22 @@ public class PlayerScript : MonoBehaviour
 
             if (Input.GetKeyUp(keyCode))
             {
-                // Debug.Log($"unPressed color '{inputColor}' of player '{PlayerName}'");
+                // Debug.Log($"unPressed color '{keycodeColor}' of player '{PlayerName}'");
                 _pressedColors.Remove(keycodeColor);
+                holdTimer = 0;
             }
         }
         
         if (_pressedColors.Count != 0)
         {
+            if (holdTimer < TimeBeforeHold)
+            {
+                holdTimer += Time.deltaTime;
+                return;
+            }
+            
             PlayerManager.EPlayerColor lastPressedInput = _pressedColors[0];
-            // Debug.Log($"Button still pressed color '{lastPressedInput}' of player '{PlayerName}'");
+            Debug.Log($"Button still pressed color '{lastPressedInput}' of player '{PlayerName}'");
         }
 
     }
@@ -130,7 +140,7 @@ public class PlayerScript : MonoBehaviour
 
     IEnumerator DestroyShot(GameObject go)
     {
-        yield return new WaitForSeconds(1);
+        yield return new WaitForSeconds(0.2f);
         Destroy(go);
     }
 
