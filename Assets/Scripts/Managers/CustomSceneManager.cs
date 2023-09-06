@@ -6,7 +6,6 @@ using UnityEngine.SceneManagement;
 public class CustomSceneManager : MonoBehaviour
 {
     private static CustomSceneManager Instance;
-    private static bool _playTransition;
 
     [SerializeField] private Animator _transitionAnimator;
     [SerializeField] private float transitionTime;
@@ -22,6 +21,15 @@ public class CustomSceneManager : MonoBehaviour
             Instance = this;
             DontDestroyOnLoad(gameObject);
         }
+
+        SceneManager.sceneLoaded += SceneLoaded;
+    }
+
+    private void OnDestroy()
+    {
+        SceneManager.sceneLoaded -= SceneLoaded;
+
+        BossController.OnPlayerInput("", true, PlayerManager.EPlayerColor.GREEN);
     }
 
     public static void LoadMainMenu(bool transition = false) => LoadSceneAtIndex(0, transition);
@@ -51,14 +59,17 @@ public class CustomSceneManager : MonoBehaviour
 
     private static IEnumerator LoadSceneAtIndex(int buildIndex, bool hasTransition)
     {
-        _playTransition = hasTransition;
-
-        if (_playTransition)
+        if (hasTransition)
         {
-            Instance._transitionAnimator.SetTrigger("Close");
+            Instance._transitionAnimator.SetBool("Transition", true);
             yield return new WaitForSeconds(Instance.transitionTime);
         }
 
         SceneManager.LoadScene(buildIndex);
+    }
+
+    private void SceneLoaded(Scene scene, LoadSceneMode sceneMode)
+    {
+        Instance._transitionAnimator.SetBool("Transition", false);
     }
 }
