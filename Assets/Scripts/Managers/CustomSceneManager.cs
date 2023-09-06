@@ -28,6 +28,8 @@ public class CustomSceneManager : MonoBehaviour
     private void OnDestroy()
     {
         SceneManager.sceneLoaded -= SceneLoaded;
+
+        BossController.OnPlayerInput("", true, PlayerManager.EPlayerColor.GREEN);
     }
 
     public static void LoadMainMenu(bool transition = false) => LoadSceneAtIndex(0, transition);
