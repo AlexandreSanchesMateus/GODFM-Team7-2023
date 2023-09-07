@@ -1151,18 +1151,19 @@ MonoBehaviour:
   _imgHypnoLevel: {fileID: 803696514}
   _textTimer: {fileID: 2093604216}
   _bossEyes:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
+  - {fileID: 531448751}
+  - {fileID: 141205094}
+  - {fileID: 1001603546}
+  - {fileID: 1980793111}
   _activationTime: 2
   _maxHypnoLevel: 30
   _hypnoLevelSpeed: 1
   _maxPv: 100
   _playerDamage: 0
-  fill: {fileID: 0}
   _delayBetweenAttack: 1.4
   _vulnerabilityTime: 5
+  diskShotCooldown: 1
+  hypnoShotCooldown: 0.1
 --- !u!95 &468277058
 Animator:
   serializedVersion: 4
@@ -2527,10 +2528,10 @@ RectTransform:
   m_Father: {fileID: 1671833490}
   m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_SizeDelta: {x: 480, y: 270}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &1671146717
 GameObject:
@@ -2647,7 +2648,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0}
   m_AnchorMax: {x: 0.5, y: 0}
-  m_AnchoredPosition: {x: -180, y: 31.599998}
+  m_AnchoredPosition: {x: -180, y: 31.600006}
   m_SizeDelta: {x: 64, y: 64}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1716879496
@@ -3185,7 +3186,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0.5}
   m_AnchorMax: {x: 1, y: 0.5}
-  m_AnchoredPosition: {x: -48.21, y: 12}
+  m_AnchoredPosition: {x: -48.20999, y: 12}
   m_SizeDelta: {x: 82.2, y: 12}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2093604216
