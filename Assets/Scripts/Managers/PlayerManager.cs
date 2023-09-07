@@ -133,6 +133,8 @@ public class PlayerManager : MonoBehaviour
                 return ColorGreen;
             case EButtonColor.YELLOW:
                 return ColorYellow;
+            default:
+                return Color.white;
         }
 
         throw new Exception("Wrong Input Color");
