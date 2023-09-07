@@ -1006,7 +1006,7 @@ Canvas:
   serializedVersion: 3
   m_RenderMode: 1
   m_Camera: {fileID: 1182439639}
-  m_PlaneDistance: 100
+  m_PlaneDistance: 1
   m_PixelPerfect: 1
   m_ReceivesEvents: 1
   m_OverrideSorting: 0
@@ -1220,6 +1220,7 @@ MonoBehaviour:
     _keyRight: 257
     _colorVerticale: 3
     _keyVerticale: 258
+  scores: []
 --- !u!1 &1586838101
 GameObject:
   m_ObjectHideFlags: 0
@@ -1290,6 +1291,7 @@ MonoBehaviour:
     _keyRight: 268
     _colorVerticale: 3
     _keyVerticale: 269
+  scores: []
 --- !u!4 &1586838103
 Transform:
   m_ObjectHideFlags: 0

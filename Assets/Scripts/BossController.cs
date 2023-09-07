@@ -37,6 +37,7 @@ public class BossController : MonoBehaviour
     private float _timeInGame = 0.0001F;
 
     [Header("UI")]
+    [SerializeField] private List<PlayerScript> 
     [SerializeField] private Image _imgHypnoLevel;
     [SerializeField] private TextMeshProUGUI _textTimer;
     [SerializeField] private List<Image> _bossEyes;
@@ -44,6 +45,7 @@ public class BossController : MonoBehaviour
     [SerializeField] private int _maxHypnoLevel;
     [SerializeField, Tooltip("Value 1 correspond to the gain of 1 hypnitic level every seconds.")] private float _hypnoLevelSpeed = 1;
     [SerializeField] private int _maxPv;
+    [SerializeField] private float _playerDamage;
     [SerializeField] private Image fill;
     [Header("Attack Phase")]
     [SerializeField] private float _delayBetweenAttack;
@@ -159,6 +161,8 @@ public class BossController : MonoBehaviour
                 break;
 
             case EBossState.VULNERABLE:
+                if (color != EButtonColor.NONE)
+                    Instance.TakeDamage();
                 break;
 
             default:
@@ -225,6 +229,13 @@ public class BossController : MonoBehaviour
             // Réinitialisation
             InitDisqueAttack();
         }
+    }
+
+    public static void TakeDamage()
+    {
+        // Animation
+        Instance._currentPV -= Instance._playerDamage;
+        Instance.fill.fillAmount = Instance._currentPV / Instance._maxPv;
     }
 
     private IEnumerator HypnotiqueAttack()
