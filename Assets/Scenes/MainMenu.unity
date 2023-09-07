@@ -768,7 +768,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 63a49f5a15b26fc4b8deeb31d0f0343b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ButtonDisplays:
+  buttonDisplays:
   - {fileID: 1473494296070847779}
   - {fileID: 5085094299105360527}
   - {fileID: 1859556313}
@@ -1385,6 +1385,22 @@ PrefabInstance:
     serializedVersion: 2
     m_TransformParent: {fileID: 63945257}
     m_Modifications:
+    - target: {fileID: 2960957302952247899, guid: 47a3f38bfc0671d41974f39a61803433, type: 3}
+      propertyPath: m_Color.a
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2960957302952247899, guid: 47a3f38bfc0671d41974f39a61803433, type: 3}
+      propertyPath: m_Color.b
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2960957302952247899, guid: 47a3f38bfc0671d41974f39a61803433, type: 3}
+      propertyPath: m_Color.g
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2960957302952247899, guid: 47a3f38bfc0671d41974f39a61803433, type: 3}
+      propertyPath: m_Color.r
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 2960957303629420864, guid: 47a3f38bfc0671d41974f39a61803433, type: 3}
       propertyPath: m_Name
       value: Player 1

@@ -120,6 +120,13 @@ public class BossController : MonoBehaviour
 
             // Boss Dead
             case EBossState.DEATH:
+                
+                // Animation
+                // WARNING NEED DELAI BEFOR LOAD NEXT SCENE //
+
+                _timeElapse = false;
+                PlayerManager.SetEndTimer(_timeInGame);
+                CustomSceneManager.LoadEndGame(true);
                 break;
         }
 

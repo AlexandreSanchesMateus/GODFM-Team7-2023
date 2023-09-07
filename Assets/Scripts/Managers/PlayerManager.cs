@@ -31,12 +31,15 @@ public class PlayerManager : MonoBehaviour
     [SerializeField] private Color32 _yellow;
     [SerializeField] private List<PlayerInfo> _setupPlayers;
 
-    
+    public static float Timer { get; private set; }
 
     [Serializable]
     public class PlayerInfo
     {
         public int ID { get; private set; }
+        public KeyCode LKey => _keyLeft;
+        public KeyCode RKey => _keyRight;
+        public KeyCode VKey => _keyVerticale;
         public Dictionary<KeyCode, EButtonColor> KeyColorDic { get; private set; }
         public Dictionary<KeyCode, string> KeyPosDic { get; private set; }
 
@@ -54,7 +57,6 @@ public class PlayerManager : MonoBehaviour
         [SerializeField] private EButtonColor _colorVerticale;
         [SerializeField] private KeyCode _keyVerticale;
 
-
         public void SetPlayerID(int newId) => ID = newId;
 
         public void SetKeyColorDic()
@@ -65,6 +67,7 @@ public class PlayerManager : MonoBehaviour
                 {_keyVerticale,_colorVerticale}
             };
         }
+
         public void SetKeyPosDic()
         {
             KeyPosDic = new() {
@@ -118,4 +121,6 @@ public class PlayerManager : MonoBehaviour
 
         throw new Exception("Wrong Input Color");
     }
+
+    public static void SetEndTimer(float endTimer) => Timer = endTimer;
 }

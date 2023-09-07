@@ -5,22 +5,28 @@ using UnityEngine;
 using DG.Tweening;
 using UnityEngine.UI;
 
+
 [RequireComponent(typeof(Animator))]
 public class ButtonDisplay : MonoBehaviour
 {
     public bool isReady { get; private set; }
 
     [SerializeField] private float _travelDuration;
+    [SerializeField] private List<Image> images;
+
+    private bool _init = false;
     private Animator _buttonsAnimator;
 
     private (bool, bool, bool) _activeButton;
-    private bool hasBeenHold = false;
-    private Coroutine _fillCoroutine;
+    private bool allActive = false;
+
+    private Dictionary<KeyCode, EButtonColor> keys;
+    private MenuController _manager;
     
-    private List<String> posNames = new(){"Left", "Right", "Vertical"};
+    /*private List<String> posNames = new(){"Left", "Right", "Vertical"};
     [SerializeField]
     private List<Image> images;
-    public Dictionary<String, Image> posImageDic = new();
+    public Dictionary<String, Image> posImageDic = new();*/
 
     private void Start()
     {
@@ -29,55 +35,101 @@ public class ButtonDisplay : MonoBehaviour
         _activeButton.Item1 = false;
         _activeButton.Item1 = false;
 
-        for (int i = 0; i < posNames.Count; i++)
+        /*for (int i = 0; i < posNames.Count; i++)
         {
             posImageDic[posNames[i]] = images[i];
+        }*/
+    }
+
+    private void Update()
+    {
+        if (!_init) return;
+
+        int index = 0;
+        foreach(KeyValuePair<KeyCode, EButtonColor> keyValue in keys)
+        {
+            if (Input.GetKeyDown(keyValue.Key))
+                SetKey(index, keyValue.Value, true);
+            else if (Input.GetKeyUp(keyValue.Key))
+                SetKey(index, keyValue.Value, false);
+
+            index++;
         }
     }
 
-    [ContextMenu("Activate All Buttons")]
-    public void ActivateAllButtons()
+    public void InitKeys(MenuController manager, PlayerManager.PlayerInfo infos)
     {
-        _buttonsAnimator.SetBool("LButton", true);
-        _buttonsAnimator.SetBool("RButton", true);
-        _buttonsAnimator.SetBool("VButton", true);
+        _manager = manager;
+        keys = infos.KeyColorDic;
+        _init = true;
     }
 
-    public void SetLeftButton(bool setActive)
+    private void SetKey(int index, EButtonColor color, bool isPressed)
     {
-        _activeButton.Item1 = setActive;
-        _buttonsAnimator.SetBool("LButton", setActive);
-    }
+        switch (index)
+        {
+            case 0:
+                _activeButton.Item1 = isPressed;
+                _buttonsAnimator.SetBool("LButton", isPressed);
+                break;
+            case 1:
+                _activeButton.Item2 = isPressed;
+                _buttonsAnimator.SetBool("RButton", isPressed);
+                break;
+            case 2:
+                _activeButton.Item3 = isPressed;
+                _buttonsAnimator.SetBool("VButton", isPressed);
+                break;
+        }
 
-    public void SetRightButton(bool setActive)
-    {
-        _activeButton.Item2 = setActive;
-        _buttonsAnimator.SetBool("RButton", setActive);
-    }
+        if (isPressed)
+            images[index].DOColor(PlayerManager.GetInputColor(color), 0.4f);
+        else
+            images[index].DOColor(Color.white, 0.4f);
 
-    public void SetVerticalButton(bool setActive)
-    {
-        _activeButton.Item3 = setActive;
-        _buttonsAnimator.SetBool("VButton", setActive);
+        CheckAllActive();
     }
 
     public void MoveShapeTo(Vector2 wordPos) => gameObject.transform.DOMove(wordPos, _travelDuration, true).SetEase(Ease.OutQuad);
 
     private void CheckAllActive()
     {
-        bool allActive = _activeButton.Item1 && _activeButton.Item2 && _activeButton.Item3;
-        if (allActive)
-        {
+        allActive = _activeButton.Item1 && _activeButton.Item2 && _activeButton.Item3;
 
+        if (isReady)
+        {
+            if (allActive)
+            {
+                StopAllCoroutines();
+            }
+            else
+            {
+                StartCoroutine(NotReadyDelai());
+            }
         }
         else
         {
-
+            if (allActive)
+            {
+                StartCoroutine(HoldButtons());
+            }
+            else
+            {
+                StopAllCoroutines();
+            }
         }
     }
 
-    private IEnumerator FillRadian()
+    private IEnumerator HoldButtons()
     {
-        yield return null;
+        yield return new WaitForSeconds(2f);
+        isReady = true;
+        _manager.CheckAllPlayersReady();
+    }
+
+    private IEnumerator NotReadyDelai()
+    {
+        yield return new WaitForSeconds(2f);
+        isReady = false;
     }
 }
