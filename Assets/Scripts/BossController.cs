@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using UnityEngine.Serialization;
 
 public class BossController : MonoBehaviour
 {
@@ -14,7 +15,6 @@ public class BossController : MonoBehaviour
         ATTACK_DISQUE,
         HYPNOTIC_PHASE,
         VULNERABLE,
-        RECOVER,
         DEATH,
         NONE,
     }
@@ -46,7 +46,7 @@ public class BossController : MonoBehaviour
     [SerializeField, Tooltip("Value 1 correspond to the gain of 1 hypnitic level every seconds.")] private float _hypnoLevelSpeed = 1;
     [SerializeField] private int _maxPv;
     [SerializeField] private float _playerDamage;
-    [SerializeField] private Image fill;
+    // [SerializeField] private Image fill;
     [Header("Attack Phase")]
     [SerializeField] private float _delayBetweenAttack;
     [Header("Vulnerability phase")]
@@ -54,6 +54,11 @@ public class BossController : MonoBehaviour
 
     private List<Barrier> barriers;
     private int barrierLevel;
+
+    [SerializeField]
+    private float diskShotCooldown = 1f;
+    [SerializeField]
+    private float hypnoShotCooldown = 0.1f;
 
     private void Awake()
     {
@@ -70,7 +75,7 @@ public class BossController : MonoBehaviour
         }
 
         currentPlayersInput = new List<EButtonColor>{ EButtonColor.NONE, EButtonColor.NONE, EButtonColor.NONE, EButtonColor.NONE };
-        fill.fillAmount = 1;
+        // fill.fillAmount = 1;
         _currentState = EBossState.NONE;
 
         Invoke(nameof(OnInitializationEnd), _activationTime);
@@ -106,6 +111,7 @@ public class BossController : MonoBehaviour
             // Disque of color
             case EBossState.ATTACK_DISQUE:
                 _increaseHypnoLevel = true;
+                players.ForEach(p => p.ChangeAttackParameters(diskShotCooldown));
                 InitDisqueAttack();
                 break;
 
@@ -117,12 +123,8 @@ public class BossController : MonoBehaviour
 
             // Players can damage the boss
             case EBossState.VULNERABLE:
+                players.ForEach(p => p.ChangeAttackParameters(hypnoShotCooldown));
                 _increaseHypnoLevel = false;
-                break;
-
-            // Exit of vulnerable state
-            case EBossState.RECOVER:
-                
                 break;
 
             // Boss Dead
@@ -147,6 +149,7 @@ public class BossController : MonoBehaviour
     {
         _timeElapse = true;
         _currentState = EBossState.ATTACK_DISQUE;
+        players.ForEach(p => p.SetActivePlayer(true));
     }
 
     public void OnRecoverEnd()
@@ -226,9 +229,7 @@ public class BossController : MonoBehaviour
             if(playedColor.Exists(p => p == color))
                 playedColor.Remove(color);
         }
-
-        Debug.LogError("azertyuivc v");
-
+        
         if (playedColor.Count == 0)
         {
             // Animation
@@ -275,7 +276,7 @@ public class BossController : MonoBehaviour
     {
         // Animation
         Instance._currentPV -= Instance._playerDamage;
-        Instance.fill.fillAmount = Instance._currentPV / Instance._maxPv;
+        // Instance.fill.fillAmount = Instance._currentPV / Instance._maxPv;
 
         if (Instance._currentPV <= 0)
         {

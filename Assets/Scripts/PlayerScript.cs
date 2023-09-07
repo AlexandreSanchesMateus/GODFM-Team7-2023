@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -22,14 +23,25 @@ public class PlayerScript : MonoBehaviour
     public void InitPlayer(PlayerManager.PlayerInfo info)
     {
         _info = info;
+        _shotTimer = Mathf.Infinity;
+    }
+
+    public void ChangeAttackParameters(float shotCooldown)
+    {
+        _timeBetweenShots = shotCooldown;
         _shotTimer = _timeBetweenShots;
     }
 
-    public void ChangeAttackParameters(float shotCooldown) => _timeBetweenShots = shotCooldown;
+    public void SetActivePlayer(bool state)
+    {
+        isActive = state;
+    }
+
+    private bool isActive { get; set; }
 
     void Update()
     {
-        if (_info == null) return;
+        if (_info == null || !isActive) return;
 
         if (_coolDown)
         {
@@ -39,17 +51,23 @@ public class PlayerScript : MonoBehaviour
                 _coolDown = false;
                 _shotTimer = 0;
             }
-        }
-        else
-        {
-            foreach(KeyValuePair<KeyCode, EButtonColor> keyValue in _info.KeyColorDic)
+            else
             {
-                if (Input.GetKeyDown(keyValue.Key))
-                    ProcessInput(true, keyValue.Value);
-                else if (Input.GetKeyUp(keyValue.Key))
-                    ProcessInput(false, keyValue.Value);
+                return;
             }
         }
+
+        foreach(KeyValuePair<KeyCode, EButtonColor> keyValue in _info.KeyColorDic)
+        {
+            if (Input.GetKeyDown(keyValue.Key))
+            {
+                ProcessInput(true, keyValue.Value);
+                _coolDown = true;
+            }
+            else if (Input.GetKeyUp(keyValue.Key))
+                ProcessInput(false, keyValue.Value);
+        }
+        
     }
 
     private void ProcessInput(bool isPressed, EButtonColor color)
@@ -69,6 +87,7 @@ public class PlayerScript : MonoBehaviour
                 
                 break;
         }
+
     }
 
     private void InstanciateBeam(EButtonColor inputColor)
@@ -81,19 +100,21 @@ public class PlayerScript : MonoBehaviour
         Vector3 direction =  selfPos - targetPos;
         float distance = direction.magnitude;
         direction /= distance;
+        
 
         Quaternion angle = Quaternion.AngleAxis(Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg, Vector3.forward);
 
         _beam = Instantiate(_beamPrefab, selfPos, angle, gameObject.transform).GetComponent<Image>();
         _beam.color = color;
         RectTransform rect = _beam.GetComponent<RectTransform>();
-        distance = (int)((distance - 624) / 160) * 160 + 624;
-        rect.sizeDelta = new Vector2(rect.sizeDelta.x, distance / 4);
+        // distance = (int)((distance - 624) / 160) * 160 + 624;
+        distance = (int)((distance - 39) / 10) * 10 + 39;
+        rect.sizeDelta = new Vector2(distance, rect.sizeDelta.y);
     }
 
     private IEnumerator BeamFade()
     {
-        yield return new WaitForSeconds(0.8f);
+        yield return new WaitForSeconds(_timeBetweenShots*0.9f);
         Destroy(_beam.gameObject);
         BossController.OnPlayerInput(_info.ID, EButtonColor.NONE);
     }
