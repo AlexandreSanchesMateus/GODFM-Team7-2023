@@ -1420,7 +1420,8 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: description
+  m_text: "Resist the hypnosis power of <b>KATARHAAKTH</b>, the evil Hypnodragon\u2019s
+    reincarnation, and emerge victorious from this fight !"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 01d303d4ed2a05243ac3f1c8446bb65d, type: 2}
   m_sharedMaterial: {fileID: 1198332254429823233, guid: 01d303d4ed2a05243ac3f1c8446bb65d, type: 2}

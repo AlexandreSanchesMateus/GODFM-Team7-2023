@@ -2,57 +2,64 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using DG.Tweening;
 
 public class HealthBar : MonoBehaviour
 {
-    [SerializeField] private int _sectionNumber;
-    [SerializeField] private HorizontalLayoutGroup _layoutGroup;
-    [SerializeField] private Transform _lifeParent;
-    [SerializeField] private GameObject _lifeSectionPrefab;
+    [SerializeField] private List<Image> _sections;
+    [SerializeField] private Color32 _sectionColor;
+    [SerializeField] private Sprite _normal;
+    [SerializeField] private Sprite _damaged;
+    [SerializeField] private Sprite _destroy;
 
-    private List<Animator> _sections;
     private float _toalePV;
     private float _sectionValue;
 
+    private int _currentSection;
+    private Coroutine _pulseRoutine;
+
     public void InitializeHealthBar(int totalHealth)
     {
-        _layoutGroup.enabled = true;
         _toalePV = totalHealth;
-        _sectionValue = totalHealth / _sectionNumber;
+        _sectionValue = totalHealth / _sections.Count;
 
-        for (int i = 0; i < _sectionNumber; i++)
-        {
-            GameObject instance = Instantiate<GameObject>(_lifeSectionPrefab, _lifeParent);
-            _sections.Add(instance.GetComponent<Animator>());
-        }
-        _layoutGroup.enabled = false;
+        _sections.ForEach(sec => { sec.sprite = _normal; sec.color = _sectionColor; });
+        _currentSection = _sections.Count - 1;
     }
 
     public void UpdateHealthValue(int currentHealth)
     {
-        int currentSection = (int)((_toalePV - currentHealth) / _sectionValue);
+        int sectionDamaged = (int)((_toalePV - currentHealth) / _sectionValue);
         float pourcent = currentHealth % _sectionValue * 100 / _toalePV;
 
         // Remove last section
-        if (_sections.Count >= currentSection)
+        if (sectionDamaged != _currentSection)
         {
-            _sections[currentSection + 1].SetTrigger("Destroy");
-            _sections.RemoveAt(currentSection + 1);
+            StopAllCoroutines();
+            transform.DOKill();
+            transform.DOShakePosition(0.15f);
+            _sections[_currentSection].sprite = _destroy;
+            _sections[_currentSection].color = _sectionColor;
+            _sections.RemoveAt(_currentSection);
+            _currentSection = sectionDamaged;
         }
 
-        _sections[currentSection].SetTrigger("Damage");
+        if(_pulseRoutine == null)
+            _pulseRoutine = StartCoroutine(Pulse());
 
-        if (pourcent < 25)
-        {
-            _sections[currentSection].SetInteger("DammageType", 3);
-        }
-        else if(pourcent < 50)
-        {
-            _sections[currentSection].SetInteger("DammageType", 2);
-        }
-        else if (pourcent < 75)
-        {
-            _sections[currentSection].SetInteger("DammageType", 1);
-        }
+        if (pourcent < 50)
+            _sections[sectionDamaged].sprite = _damaged;
+    }
+
+    private IEnumerator Pulse()
+    {
+        _sections[_currentSection].color = Color.white;
+        yield return new WaitForSeconds(0.05f);
+        _sections[_currentSection].color = _sectionColor;
+        yield return new WaitForSeconds(0.05f);
+        _sections[_currentSection].color = Color.white;
+        yield return new WaitForSeconds(0.05f);
+        _sections[_currentSection].color = _sectionColor;
+        yield return new WaitForSeconds(0.05f);
     }
 }
