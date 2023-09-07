@@ -12,6 +12,9 @@ public class PlayerScript : MonoBehaviour
     [SerializeField] private GameObject _target;
 
     [SerializeField] private GameObject _projectilPrefab;
+    [SerializeField] private Transform laserParent;
+    [SerializeField] private Transform laserStart;
+    [SerializeField] private Transform laserTarget;
 
     private bool _coolDown = false;
     private float _timeBetweenShots = 0;
@@ -94,21 +97,24 @@ public class PlayerScript : MonoBehaviour
     {
         Color32 color = PlayerManager.GetInputColor(inputColor);
 
-        Vector3 selfPos = gameObject.transform.position;
-        Vector3 targetPos = _target.transform.position;
+        Vector3 startPos = laserStart.position;
+        Vector3 targetPos = laserTarget.position;
         
-        Vector3 direction =  selfPos - targetPos;
+        Vector3 direction =  startPos - targetPos;
         float distance = direction.magnitude;
+        // Debug.Log($"{startPos.x} - {targetPos.x} || {startPos.y} - {targetPos.y} || {startPos.z} - {targetPos.z}");
+        distance *= 28.5f; // I have no idea why but this is the value that works
+        Debug.Log(distance);
         direction /= distance;
         
 
         Quaternion angle = Quaternion.AngleAxis(Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg, Vector3.forward);
 
-        _beam = Instantiate(_beamPrefab, selfPos, angle, gameObject.transform).GetComponent<Image>();
+        _beam = Instantiate(_beamPrefab, startPos, angle, laserParent).GetComponent<Image>();
         _beam.color = color;
         RectTransform rect = _beam.GetComponent<RectTransform>();
         // distance = (int)((distance - 624) / 160) * 160 + 624;
-        distance = (int)((distance - 39) / 10) * 10 + 39;
+        //distance = (int)((distance - 39) / 10) * 10 + 39;
         rect.sizeDelta = new Vector2(distance, rect.sizeDelta.y);
     }
 
