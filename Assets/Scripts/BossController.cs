@@ -237,11 +237,17 @@ public class BossController : MonoBehaviour
         }
     }
 
-    public static void TakeDamage()
+    private static void TakeDamage()
     {
         // Animation
         Instance._currentPV -= Instance._playerDamage;
         Instance.fill.fillAmount = Instance._currentPV / Instance._maxPv;
+
+        if (Instance._currentPV <= 0)
+        {
+            //DEATH
+            Instance._currentState = EBossState.DEATH;
+        }
     }
 
     private IEnumerator HypnotiqueAttack()
