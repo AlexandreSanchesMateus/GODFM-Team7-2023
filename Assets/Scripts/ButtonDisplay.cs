@@ -11,8 +11,8 @@ public class ButtonDisplay : MonoBehaviour
 {
     public bool isReady { get; private set; }
 
-    [SerializeField] private float _travelDuration;
     [SerializeField] private List<Image> images;
+    [SerializeField] private Image fill;
 
     private bool _init = false;
     private Animator _buttonsAnimator;
@@ -34,6 +34,9 @@ public class ButtonDisplay : MonoBehaviour
         _activeButton.Item1 = false;
         _activeButton.Item1 = false;
         _activeButton.Item1 = false;
+
+        fill.fillAmount = 0;
+        isReady = false;
 
         /*for (int i = 0; i < posNames.Count; i++)
         {
@@ -90,7 +93,7 @@ public class ButtonDisplay : MonoBehaviour
         CheckAllActive();
     }
 
-    public void MoveShapeTo(Vector2 wordPos) => gameObject.transform.DOMove(wordPos, _travelDuration, true).SetEase(Ease.OutQuad);
+    public void MoveShapeTo(Vector2 wordPos, float time) => gameObject.transform.DOMove(wordPos, time, true).SetEase(Ease.OutQuad);
 
     private void CheckAllActive()
     {
@@ -111,10 +114,14 @@ public class ButtonDisplay : MonoBehaviour
         {
             if (allActive)
             {
+                fill.DOKill();
+                fill.DOFillAmount(1, 2f).SetEase(Ease.Linear);
                 StartCoroutine(HoldButtons());
             }
             else
             {
+                fill.DOKill();
+                fill.DOFillAmount(0, 0.2f).SetEase(Ease.Linear);
                 StopAllCoroutines();
             }
         }
@@ -130,6 +137,7 @@ public class ButtonDisplay : MonoBehaviour
     private IEnumerator NotReadyDelai()
     {
         yield return new WaitForSeconds(2f);
+        fill.DOFillAmount(0, 0.2f);
         isReady = false;
     }
 }
