@@ -54,18 +54,20 @@ public class BossController : MonoBehaviour
     [Header("Vulnerability phase")]
     [SerializeField] private float _vulnerabilityTime;
     private float _vulnerabilityTimer;
-
+    
     private List<Barrier> barriers;
     private int barrierLevel;
 
-    [SerializeField] private Transform bossBody;
-
+    [Header("Shooting Cooldowns")]
     [SerializeField]
     private float diskShotCooldown = 1f;
     [SerializeField]
     private float hypnoShotCooldown = 0.1f;
     [SerializeField]
     private float vulnShotCooldown = 0.1f;
+    
+    [Header("References")]
+    [SerializeField] private Transform bossBody;
     
 
     private void Awake()
