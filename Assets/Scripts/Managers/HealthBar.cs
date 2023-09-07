@@ -22,7 +22,8 @@ public class HealthBar : MonoBehaviour
 
         for (int i = 0; i < _sectionNumber; i++)
         {
-            _sections.Add(Instantiate<GameObject>(_lifeSectionPrefab, _lifeParent).GetComponent<Animator>());
+            GameObject instance = Instantiate<GameObject>(_lifeSectionPrefab, _lifeParent);
+            _sections.Add(instance.GetComponent<Animator>());
         }
         _layoutGroup.enabled = false;
     }
