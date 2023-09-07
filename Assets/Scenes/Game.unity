@@ -1471,6 +1471,7 @@ MonoBehaviour:
   _vulnerabilityTime: 5
   diskShotCooldown: 1
   hypnoShotCooldown: 0.1
+  vulnShotCooldown: 0.1
 --- !u!95 &468277058
 Animator:
   serializedVersion: 4
@@ -1882,10 +1883,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _beamPrefab: {fileID: 7737075593873710812, guid: a70ca3e7679fe6d4aa10c94a44f005f0, type: 3}
   _target: {fileID: 468277055}
-  _projectilPrefab: {fileID: 0}
+  _projectilPrefab: {fileID: 5318953962137752771, guid: 00eb27f03a05a444a87a29c8e29df4cb, type: 3}
   laserParent: {fileID: 186850662}
   laserStart: {fileID: 111215146}
-  laserTarget: {fileID: 115592251}
+  target: {fileID: 115592251}
 --- !u!1 &725147980
 GameObject:
   m_ObjectHideFlags: 0
@@ -2240,10 +2241,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _beamPrefab: {fileID: 7737075593873710812, guid: a70ca3e7679fe6d4aa10c94a44f005f0, type: 3}
   _target: {fileID: 468277055}
-  _projectilPrefab: {fileID: 0}
+  _projectilPrefab: {fileID: 5318953962137752771, guid: 00eb27f03a05a444a87a29c8e29df4cb, type: 3}
   laserParent: {fileID: 186850662}
   laserStart: {fileID: 74081375}
-  laserTarget: {fileID: 433290012}
+  target: {fileID: 433290012}
 --- !u!114 &881761906
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2884,10 +2885,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _beamPrefab: {fileID: 7737075593873710812, guid: a70ca3e7679fe6d4aa10c94a44f005f0, type: 3}
   _target: {fileID: 468277055}
-  _projectilPrefab: {fileID: 0}
+  _projectilPrefab: {fileID: 5318953962137752771, guid: 00eb27f03a05a444a87a29c8e29df4cb, type: 3}
   laserParent: {fileID: 186850662}
   laserStart: {fileID: 1502992370}
-  laserTarget: {fileID: 569350564}
+  target: {fileID: 569350564}
 --- !u!114 &1389735542
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3537,10 +3538,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _beamPrefab: {fileID: 7737075593873710812, guid: a70ca3e7679fe6d4aa10c94a44f005f0, type: 3}
   _target: {fileID: 468277055}
-  _projectilPrefab: {fileID: 0}
+  _projectilPrefab: {fileID: 5318953962137752771, guid: 00eb27f03a05a444a87a29c8e29df4cb, type: 3}
   laserParent: {fileID: 186850662}
   laserStart: {fileID: 507219913}
-  laserTarget: {fileID: 49852978}
+  target: {fileID: 49852978}
 --- !u!114 &1716879497
 MonoBehaviour:
   m_ObjectHideFlags: 0

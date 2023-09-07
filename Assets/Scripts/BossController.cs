@@ -60,6 +60,8 @@ public class BossController : MonoBehaviour
     private float diskShotCooldown = 1f;
     [SerializeField]
     private float hypnoShotCooldown = 0.1f;
+    [SerializeField]
+    private float vulnShotCooldown = 0.1f;
 
     private void Awake()
     {
@@ -124,13 +126,23 @@ public class BossController : MonoBehaviour
             case EBossState.HYPNOTIC_PHASE:
                 // TODO: Maybe disable completely the eyes?                
                 _bossEyes.ForEach(img => img.color = Color.white);
+                players.ForEach(p =>
+                {
+                    p.ChangeAttackParameters(hypnoShotCooldown); 
+                    p.SetLaserTarget(_bossEyesTransform); 
+                });
                 _increaseHypnoLevel = true;
                 InitHypnoAttack();
                 break;
 
             // Players can damage the boss
             case EBossState.VULNERABLE:
-                players.ForEach(p => p.ChangeAttackParameters(hypnoShotCooldown));
+                players.ForEach(p =>
+                {
+                    p.ChangeAttackParameters(vulnShotCooldown); 
+                    p.SetLaserTarget(gameObject.transform); 
+                });
+                _bossEyes.ForEach(img => img.color = Color.white);
                 _increaseHypnoLevel = false;
                 break;
 
@@ -298,7 +310,7 @@ public class BossController : MonoBehaviour
         if (Instance._currentPV <= 0)
         {
             //DEATH
-            Instance._currentState = EBossState.DEATH;
+            //Instance._currentState = EBossState.DEATH;
         }
     }
     
@@ -309,6 +321,12 @@ public class BossController : MonoBehaviour
     public void GoHypno()
     {
         _currentState = EBossState.HYPNOTIC_PHASE;
+    }
+    
+    [ContextMenu("Go Vuln")]
+    public void GoVuln()
+    {
+        _currentState = EBossState.VULNERABLE;
     }
     
     [ContextMenu("ResetHypno")]

@@ -14,6 +14,8 @@ public class Projectil : MonoBehaviour
     private List<int> directions = new() { 1, -1 };
     public float duration;
 
+    [SerializeField] private GameObject explosionPrefab;
+
     private void Start()
     {
         if (Target == null) return;
@@ -54,5 +56,12 @@ public class Projectil : MonoBehaviour
         waypoints.Add(targetHandle);
 
         transform.DOPath(waypoints.ToArray(), duration, PathType.CubicBezier, resolution:5).SetEase(Ease.OutCirc);
+        Invoke(nameof(DestroyProjectile), duration*1.1f);
+    }
+
+    void DestroyProjectile()
+    {
+        Instantiate(explosionPrefab, transform.position + new Vector3(Random.Range(-0.5f, 0.5f), Random.Range(-0.5f, 0.5f), 0), Quaternion.identity);
+        Destroy(gameObject);
     }
 }

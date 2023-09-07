@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 public class PlayerScript : MonoBehaviour
@@ -14,7 +15,7 @@ public class PlayerScript : MonoBehaviour
     [SerializeField] private GameObject _projectilPrefab;
     [SerializeField] private Transform laserParent;
     [SerializeField] private Transform laserStart;
-    [SerializeField] private Transform laserTarget;
+    [FormerlySerializedAs("laserTarget")] [SerializeField] private Transform target;
 
     private bool _coolDown = false;
     private float _timeBetweenShots = 0;
@@ -37,7 +38,12 @@ public class PlayerScript : MonoBehaviour
 
     public void SetLaserTarget(List<Transform> transforms)
     {
-        laserTarget = transforms[_info.ID];
+        target = transforms[_info.ID];
+    }
+    
+    public void SetLaserTarget(Transform gameObjectTransform)
+    {
+        target = gameObjectTransform;
     }
 
     public void SetActivePlayer(bool state)
@@ -101,10 +107,21 @@ public class PlayerScript : MonoBehaviour
                 break;
 
             case BossController.EBossState.VULNERABLE:
-                
+                if (isPressed)
+                {
+                    InstantiateProjectile(color);
+                    BossController.OnPlayerInput(_info.ID, color);
+                }
                 break;
         }
 
+    }
+
+    private void InstantiateProjectile(EButtonColor color)
+    {
+        Projectil proj = Instantiate(_projectilPrefab, transform.position, Quaternion.identity, laserParent).GetComponent<Projectil>();
+        proj.Target = _target;
+        proj.GetComponent<Image>().color = PlayerManager.GetInputColor(color);
     }
 
     private void InstanciateBeam(EButtonColor inputColor)
@@ -112,7 +129,7 @@ public class PlayerScript : MonoBehaviour
         Color32 color = PlayerManager.GetInputColor(inputColor);
 
         Vector3 startPos = laserStart.position;
-        Vector3 targetPos = laserTarget.position;
+        Vector3 targetPos = target.position;
         
         Vector3 direction =  startPos - targetPos;
         float distance = direction.magnitude;
