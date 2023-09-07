@@ -65,6 +65,7 @@ public class ButtonDisplay : MonoBehaviour
         _manager = manager;
         keys = infos.KeyColorDic;
         _init = true;
+        fill.color = PlayerManager.GetInputColor(infos.PlayerColor);
     }
 
     private void SetKey(int index, EButtonColor color, bool isPressed)

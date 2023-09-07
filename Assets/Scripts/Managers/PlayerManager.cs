@@ -45,27 +45,21 @@ public class PlayerManager : MonoBehaviour
     public class PlayerInfo
     {
         public int ID { get; private set; }
-        public KeyCode LKey => _keyLeft;
-        public KeyCode RKey => _keyRight;
-        public KeyCode VKey => _keyVerticale;
+        public EButtonColor PlayerColor { get; private set; }
         public Dictionary<KeyCode, EButtonColor> KeyColorDic { get; private set; }
-        public Dictionary<KeyCode, string> KeyPosDic { get; private set; }
+
+
 
         [SerializeField] private bool _buttonInverted;
 
-        [Header("Left Button")] [SerializeField]
-        private EButtonColor _colorLeft;
-
+        [Header("Left Button")]
+        [SerializeField] private EButtonColor _colorLeft;
         [SerializeField] private KeyCode _keyLeft;
-
-        [Header("Right Button")] [SerializeField]
-        private EButtonColor _colorRight;
-
+        [Header("Right Button")]
+        [SerializeField] private EButtonColor _colorRight;
         [SerializeField] private KeyCode _keyRight;
-
-        [Header("Vertical Button")] [SerializeField]
-        private EButtonColor _colorVerticale;
-
+        [Header("Vertical Button")]
+        [SerializeField] private EButtonColor _colorVerticale;
         [SerializeField] private KeyCode _keyVerticale;
 
         public void SetPlayerID(int newId) => ID = newId;
@@ -78,18 +72,13 @@ public class PlayerManager : MonoBehaviour
                 { _keyRight, _colorRight },
                 { _keyVerticale, _colorVerticale }
             };
-        }
 
-        public void SetKeyPosDic()
-        {
-            KeyPosDic = new()
+            for (int i = 0; i < 4; i++)
             {
-                { _keyLeft, "Left" },
-                { _keyRight, "Right" },
-                { _keyVerticale, "Vertical" }
-            };
+                if (!KeyColorDic.ContainsValue((EButtonColor)i))
+                    PlayerColor = (EButtonColor)i;
+            }
         }
-
     }
 
     #endregion
@@ -113,7 +102,6 @@ public class PlayerManager : MonoBehaviour
                 PlayerInfo playerInfo = _setupPlayers[i];
                 playerInfo.SetPlayerID(i);
                 playerInfo.SetKeyColorDic();
-                playerInfo.SetKeyPosDic();
             }
 
         }
