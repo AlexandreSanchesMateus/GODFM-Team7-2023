@@ -14,7 +14,7 @@ public class PlayerScript : MonoBehaviour
 
     [SerializeField] private GameObject _projectilPrefab;
     [SerializeField] private Transform laserParent;
-    [SerializeField] private Transform laserStart;
+    [FormerlySerializedAs("laserStart")] [SerializeField] private Transform shootStart;
     [FormerlySerializedAs("laserTarget")] [SerializeField] private Transform target;
 
     private bool _coolDown = false;
@@ -119,7 +119,7 @@ public class PlayerScript : MonoBehaviour
 
     private void InstantiateProjectile(EButtonColor color)
     {
-        Projectil proj = Instantiate(_projectilPrefab, transform.position, Quaternion.identity, laserParent).GetComponent<Projectil>();
+        Projectil proj = Instantiate(_projectilPrefab, shootStart.position, Quaternion.identity, laserParent).GetComponent<Projectil>();
         proj.Target = _target;
         proj.GetComponent<Image>().color = PlayerManager.GetInputColor(color);
     }
@@ -128,7 +128,7 @@ public class PlayerScript : MonoBehaviour
     {
         Color32 color = PlayerManager.GetInputColor(inputColor);
 
-        Vector3 startPos = laserStart.position;
+        Vector3 startPos = shootStart.position;
         Vector3 targetPos = target.position;
         
         Vector3 direction =  startPos - targetPos;
