@@ -53,6 +53,7 @@ public class BossController : MonoBehaviour
     [SerializeField] private float _delayBetweenAttack;
     [Header("Vulnerability phase")]
     [SerializeField] private float _vulnerabilityTime;
+    private float _vulnerabilityTimer;
 
     private List<Barrier> barriers;
     private int barrierLevel;
@@ -65,6 +66,7 @@ public class BossController : MonoBehaviour
     private float hypnoShotCooldown = 0.1f;
     [SerializeField]
     private float vulnShotCooldown = 0.1f;
+    
 
     private void Awake()
     {
@@ -109,9 +111,21 @@ public class BossController : MonoBehaviour
             _textTimer.text = string.Format("{0}.{1}.{2}", minutes, secound, milisecound);
         }
 
+        if (_currentState == EBossState.VULNERABLE)
+        {
+            _vulnerabilityTimer += Time.deltaTime;
+            if (_vulnerabilityTimer >= _vulnerabilityTime)
+            {
+                _currentState = EBossState.NONE;
+                StartCoroutine(DelayState(EBossState.ATTACK_DISQUE, 1f));
+            }
+        }
+
         // STATE MACHINE
         if (_previousState == _currentState) return;
-
+        
+        currentPlayersInput = new List<EButtonColor>{ EButtonColor.NONE, EButtonColor.NONE, EButtonColor.NONE, EButtonColor.NONE };
+        
         switch (_currentState)
         {
             // Disque of color
@@ -147,6 +161,7 @@ public class BossController : MonoBehaviour
                 });
                 _bossEyes.ForEach(img => img.color = Color.white);
                 _increaseHypnoLevel = false;
+                _vulnerabilityTimer = 0;
                 break;
 
             // Boss Dead
