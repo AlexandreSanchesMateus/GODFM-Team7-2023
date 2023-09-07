@@ -30,18 +30,18 @@ public class CustomSceneManager : MonoBehaviour
         SceneManager.sceneLoaded -= SceneLoaded;
     }
 
-    public static void LoadMainMenu(bool transition = false) => LoadSceneAtIndex(0, transition);
+    public static void LoadMainMenu(bool transition = false) => Instance.StartCoroutine(LoadSceneAtIndex(0, transition));
 
-    public static void LoadGame(bool transition = false) => LoadSceneAtIndex(1, transition);
+    public static void LoadGame(bool transition = false) => Instance.StartCoroutine(LoadSceneAtIndex(1, transition));
 
-    public static void LoadEndGame(bool transition = false) => LoadSceneAtIndex(2, transition);
+    public static void LoadEndGame(bool transition = false) => Instance.StartCoroutine(LoadSceneAtIndex(2, transition));
 
     public static void LoadNextScene(bool transition = false)
     {
         int nextBuildIndex = SceneManager.GetActiveScene().buildIndex + 1;
 
         if (nextBuildIndex < SceneManager.sceneCount)
-            LoadSceneAtIndex(nextBuildIndex, transition);
+            Instance.StartCoroutine(LoadSceneAtIndex(nextBuildIndex, transition));
         else
             throw new System.Exception("CustomSceneManager ERROR : Cound not found next scene at index " + nextBuildIndex);
     }
@@ -50,20 +50,24 @@ public class CustomSceneManager : MonoBehaviour
         int nextBuildIndex = SceneManager.GetActiveScene().buildIndex - 1;
 
         if (nextBuildIndex > 0)
-            LoadSceneAtIndex(nextBuildIndex, transition);
+            Instance.StartCoroutine(LoadSceneAtIndex(nextBuildIndex, transition));
         else
             throw new System.Exception("CustomSceneManager ERROR : There is no previous scene. BuildIndex must be positif > " + nextBuildIndex);
     }
 
     private static IEnumerator LoadSceneAtIndex(int buildIndex, bool hasTransition)
     {
+        Debug.Log("azert");
+
         if (hasTransition)
         {
             Instance._transitionAnimator.SetBool("Transition", true);
             yield return new WaitForSeconds(Instance.transitionTime);
         }
 
+        Debug.Log("2");
         SceneManager.LoadScene(buildIndex);
+        Debug.Log("3");
     }
 
     private void SceneLoaded(Scene scene, LoadSceneMode sceneMode)

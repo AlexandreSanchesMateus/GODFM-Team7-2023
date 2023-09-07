@@ -44,7 +44,7 @@ public class BossController : MonoBehaviour
     [SerializeField] private int _maxHypnoLevel;
     [SerializeField, Tooltip("Value 1 correspond to the gain of 1 hypnitic level every seconds.")] private float _hypnoLevelSpeed = 1;
     [SerializeField] private int _maxPv;
-    [SerializeField] private HealthBar _healthBar;
+    [SerializeField] private Image fill;
     [Header("Attack Phase")]
     [SerializeField] private float _delayBetweenAttack;
     [Header("Vulnerability phase")]
@@ -60,7 +60,7 @@ public class BossController : MonoBehaviour
         _bossAnimator = gameObject.GetComponent<Animator>();
 
         currentPlayersInput = new List<EButtonColor>(PlayerManager.PlayerInfos.Count);
-        _healthBar.InitializeHealthBar(_maxPv);
+        fill.fillAmount = 1;
         _currentState = EBossState.NONE;
     }
 
@@ -81,7 +81,7 @@ public class BossController : MonoBehaviour
 
             string minutes = ((int)(_timeInGame % 3600 / 60)).ToString("D2");
             string secound = ((int)_timeInGame % 60).ToString("D2");
-            string milisecound = ((int)((_timeInGame - (int)_timeInGame) * 1000)).ToString();
+            string milisecound = ((int)((_timeInGame - (int)_timeInGame) * 1000)).ToString("D3");
 
             _textTimer.text = string.Format("{0}.{1}.{2}", minutes, secound, milisecound);
         }
