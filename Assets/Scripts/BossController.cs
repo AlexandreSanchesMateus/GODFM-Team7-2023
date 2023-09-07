@@ -52,6 +52,9 @@ public class BossController : MonoBehaviour
     [Header("Vulnerability phase")]
     [SerializeField] private float _vulnerabilityTime;
 
+    private List<Barrier> barriers;
+    private int barrierLevel;
+
     private void Awake()
     {
         Instance = this;
@@ -109,7 +112,7 @@ public class BossController : MonoBehaviour
             // Minigame when the level of hypnose is at its maximum
             case EBossState.HYPNOTIC_PHASE:
                 _increaseHypnoLevel = true;
-                StartCoroutine(HypnotiqueAttack());
+                InitHypnoAttack();
                 break;
 
             // Players can damage the boss
@@ -137,6 +140,8 @@ public class BossController : MonoBehaviour
         _previousState = _currentState;
     }
 
+    
+
     #region Animation Related
     public void OnInitializationEnd()
     {
@@ -160,6 +165,7 @@ public class BossController : MonoBehaviour
                 break;
 
             case EBossState.HYPNOTIC_PHASE:
+                Instance.CheckHypnoEnd();
                 break;
 
             case EBossState.VULNERABLE:
@@ -236,17 +242,71 @@ public class BossController : MonoBehaviour
             InitDisqueAttack();
         }
     }
+    
+    private void InitHypnoAttack()
+    {
+        barrierLevel = 0;
+        barriers = new List<Barrier>(2) { new(), new() };
+        BarrierScript.InitBarrierVisuals(barriers);
+    }
 
-    public static void TakeDamage()
+    private void CheckHypnoEnd()
+    {
+        Barrier currBarrier = barriers[barrierLevel];
+        for (int i = 0; i < 4; i++)
+        {
+            if (currBarrier.neededColors[i] != currentPlayersInput[i])
+            {
+                // Not all good colors
+                return;
+            }
+        }
+
+        BarrierScript.RemoveBarrier(barrierLevel);
+        barrierLevel++;
+        if (barrierLevel == 2)
+        {
+            _currentState = EBossState.ATTACK_DISQUE;
+            //_currentState = EBossState.DEATH;
+        }
+    }
+
+    private static void TakeDamage()
     {
         // Animation
         Instance._currentPV -= Instance._playerDamage;
         Instance.fill.fillAmount = Instance._currentPV / Instance._maxPv;
-    }
 
-    private IEnumerator HypnotiqueAttack()
-    {
-        yield return null;
+        if (Instance._currentPV <= 0)
+        {
+            //DEATH
+            Instance._currentState = EBossState.DEATH;
+        }
     }
+    
     #endregion
+    
+    // TODO: REMOVE
+    [ContextMenu("Go Hypno")]
+    public void GoHypno()
+    {
+        _currentState = EBossState.HYPNOTIC_PHASE;
+    }
+    
+    [ContextMenu("ResetHypno")]
+    public void ResetHypno()
+    {
+        InitHypnoAttack();
+    }
+    
+    [ContextMenu("DestroyBarrier")]
+    public void DestroyBarrier()
+    {
+        for (int i = 0; i < 4; i++)
+        {
+            OnPlayerInput(i, barriers[barrierLevel].neededColors[i]);
+        }
+    }
 }
+
+
