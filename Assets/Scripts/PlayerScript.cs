@@ -35,6 +35,11 @@ public class PlayerScript : MonoBehaviour
         _shotTimer = _timeBetweenShots;
     }
 
+    public void SetLaserTarget(List<Transform> transforms)
+    {
+        laserTarget = transforms[_info.ID];
+    }
+
     public void SetActivePlayer(bool state)
     {
         isActive = state;
@@ -78,6 +83,15 @@ public class PlayerScript : MonoBehaviour
         switch (BossController.CurrentState)
         {
             case BossController.EBossState.ATTACK_DISQUE:
+                if (isPressed)
+                {
+                    InstanciateBeam(color);
+                    BossController.OnPlayerInput(_info.ID, color);
+                    StartCoroutine(BeamFade());
+                }
+                break;
+            
+            case BossController.EBossState.HYPNOTIC_PHASE:
                 if (isPressed)
                 {
                     InstanciateBeam(color);
