@@ -57,17 +57,13 @@ public class CustomSceneManager : MonoBehaviour
 
     private static IEnumerator LoadSceneAtIndex(int buildIndex, bool hasTransition)
     {
-        Debug.Log("azert");
-
         if (hasTransition)
         {
             Instance._transitionAnimator.SetBool("Transition", true);
             yield return new WaitForSeconds(Instance.transitionTime);
         }
 
-        Debug.Log("2");
         SceneManager.LoadScene(buildIndex);
-        Debug.Log("3");
     }
 
     private void SceneLoaded(Scene scene, LoadSceneMode sceneMode)

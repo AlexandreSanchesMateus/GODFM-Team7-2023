@@ -7,7 +7,7 @@ public class PlayerScript : MonoBehaviour
 {
     private PlayerManager.PlayerInfo _info;
 
-    [SerializeField] private GameObject _shotPrefab;
+    [SerializeField] private GameObject _beamPrefab;
     [SerializeField] private GameObject _target;
 
     [SerializeField] private GameObject _projectilPrefab;
@@ -15,6 +15,8 @@ public class PlayerScript : MonoBehaviour
     private bool _coolDown = false;
     private float _timeBetweenShots = 0;
     private float _shotTimer;
+
+    private Image _beam;
 
 
     public void InitPlayer(PlayerManager.PlayerInfo info)
@@ -57,6 +59,7 @@ public class PlayerScript : MonoBehaviour
             case BossController.EBossState.ATTACK_DISQUE:
                 if (isPressed)
                 {
+                    InstanciateBeam(color);
                     BossController.OnPlayerInput(_info.ID, color);
                     StartCoroutine(BeamFade());
                 }
@@ -68,7 +71,7 @@ public class PlayerScript : MonoBehaviour
         }
     }
 
-    private void ShowColorInput(EButtonColor inputColor)
+    private void InstanciateBeam(EButtonColor inputColor)
     {
         Color32 color = PlayerManager.GetInputColor(inputColor);
 
@@ -81,15 +84,17 @@ public class PlayerScript : MonoBehaviour
 
         Quaternion angle = Quaternion.AngleAxis(Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg, Vector3.forward);
 
-        Image Beam = Instantiate(_shotPrefab, selfPos, angle, gameObject.transform).GetComponent<Image>();
-        Beam.color = color;
-        RectTransform rect = Beam.GetComponent<RectTransform>();
-        rect.sizeDelta = new Vector2(rect.sizeDelta.x, distance);
+        _beam = Instantiate(_beamPrefab, selfPos, angle, gameObject.transform).GetComponent<Image>();
+        _beam.color = color;
+        RectTransform rect = _beam.GetComponent<RectTransform>();
+        distance = (int)((distance - 624) / 160) * 160 + 624;
+        rect.sizeDelta = new Vector2(rect.sizeDelta.x, distance / 4);
     }
 
     private IEnumerator BeamFade()
     {
         yield return new WaitForSeconds(0.8f);
+        Destroy(_beam.gameObject);
         BossController.OnPlayerInput(_info.ID, EButtonColor.NONE);
     }
 }

@@ -13,7 +13,6 @@ public class BossController : MonoBehaviour
     {
         ATTACK_DISQUE,
         HYPNOTIC_PHASE,
-        CHOSE_ATTACK,
         VULNERABLE,
         RECOVER,
         DEATH,
@@ -42,6 +41,7 @@ public class BossController : MonoBehaviour
     [SerializeField] private TextMeshProUGUI _textTimer;
     [SerializeField] private List<Image> _bossEyes;
     [Header("General Settings")]
+    [SerializeField] private float _activationTime;
     [SerializeField] private int _maxHypnoLevel;
     [SerializeField, Tooltip("Value 1 correspond to the gain of 1 hypnitic level every seconds.")] private float _hypnoLevelSpeed = 1;
     [SerializeField] private int _maxPv;
@@ -66,9 +66,11 @@ public class BossController : MonoBehaviour
             players[i].InitPlayer(PlayerManager.PlayerInfos[i]);
         }
 
-        currentPlayersInput = new List<EButtonColor>(PlayerManager.PlayerInfos.Count);
+        currentPlayersInput = new List<EButtonColor>{ EButtonColor.NONE, EButtonColor.NONE, EButtonColor.NONE, EButtonColor.NONE };
         fill.fillAmount = 1;
         _currentState = EBossState.NONE;
+
+        Invoke(nameof(OnInitializationEnd), _activationTime);
     }
 
     private void Update()
@@ -98,11 +100,6 @@ public class BossController : MonoBehaviour
 
         switch (_currentState)
         {
-            // Chose the next attack randomly
-            case EBossState.CHOSE_ATTACK:
-                StartCoroutine(DelayState((EBossState)Random.Range(0, 5), _delayBetweenAttack));
-                break;
-
             // Disque of color
             case EBossState.ATTACK_DISQUE:
                 _increaseHypnoLevel = true;
@@ -144,18 +141,18 @@ public class BossController : MonoBehaviour
     public void OnInitializationEnd()
     {
         _timeElapse = true;
-        _currentState = EBossState.CHOSE_ATTACK;
+        _currentState = EBossState.ATTACK_DISQUE;
     }
 
     public void OnRecoverEnd()
     {
-        StartCoroutine(DelayState(EBossState.CHOSE_ATTACK, 0.5f));
+        StartCoroutine(DelayState(EBossState.ATTACK_DISQUE, 0.5f));
     }
     #endregion
 
     public static void OnPlayerInput(int playerId, EButtonColor color)
     {
-        Instance.currentPlayersInput[1] = color;
+        Instance.currentPlayersInput[playerId] = color;
         switch (Instance._currentState)
         {
             case EBossState.ATTACK_DISQUE:
@@ -193,6 +190,8 @@ public class BossController : MonoBehaviour
     #region Attack Types
     private void InitDisqueAttack()
     {
+        currentPlayersInput.ForEach(input => input = EButtonColor.NONE);
+
         EButtonColor[] colorSelected = new EButtonColor[4];
         List<EButtonColor> colorPossible = new List<EButtonColor>{
             EButtonColor.BLUE, EButtonColor.BLUE,
@@ -204,8 +203,8 @@ public class BossController : MonoBehaviour
         for (int i = 0; i < 4; i++)
         {
             int random = Random.Range(0, colorPossible.Count);
-            colorPossible.RemoveAt(random);
             colorSelected[i] = colorPossible[random];
+            colorPossible.RemoveAt(random);
             _bossEyes[i].color = PlayerManager.GetInputColor(colorSelected[i]);
         }
     }
@@ -215,12 +214,14 @@ public class BossController : MonoBehaviour
         List<EButtonColor> playedColor = new List<EButtonColor>(colorSelected);
         foreach(EButtonColor color in currentPlayersInput)
         {
-            /*if (color == PlayerManager.EPlayerColor.NONE)
-                return;*/
+            if (color == EButtonColor.NONE)
+                return;
 
             if(playedColor.Exists(p => p == color))
                 playedColor.Remove(color);
         }
+
+        Debug.LogError("azertyuivc v");
 
         if (playedColor.Count == 0)
         {
