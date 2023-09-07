@@ -260,6 +260,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e49eed2aef056404fb34a89ab7a69c2e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  players:
+  - {fileID: 689311968}
+  - {fileID: 1716879496}
+  - {fileID: 1389735541}
+  - {fileID: 881761905}
   _imgHypnoLevel: {fileID: 803696514}
   _textTimer: {fileID: 2093604216}
   _bossEyes:
@@ -883,11 +888,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2ab56e18a7f83744a88451490f4c6d6d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerId: 0
-  DisqueAttackDeltaTime: 0
-  TimeBeforeHold: 0.2
-  shotPrefab: {fileID: 7737075593873710812, guid: a70ca3e7679fe6d4aa10c94a44f005f0, type: 3}
-  target: {fileID: 1416301133}
+  _shotPrefab: {fileID: 0}
+  _target: {fileID: 0}
+  _projectilPrefab: {fileID: 0}
 --- !u!1 &803696512
 GameObject:
   m_ObjectHideFlags: 0
@@ -1015,11 +1018,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2ab56e18a7f83744a88451490f4c6d6d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerId: 3
-  DisqueAttackDeltaTime: 0
-  TimeBeforeHold: 0.2
-  shotPrefab: {fileID: 7737075593873710812, guid: a70ca3e7679fe6d4aa10c94a44f005f0, type: 3}
-  target: {fileID: 1416301133}
+  _shotPrefab: {fileID: 0}
+  _target: {fileID: 0}
+  _projectilPrefab: {fileID: 0}
 --- !u!114 &881761906
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1506,11 +1507,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2ab56e18a7f83744a88451490f4c6d6d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerId: 2
-  DisqueAttackDeltaTime: 0
-  TimeBeforeHold: 0.2
-  shotPrefab: {fileID: 7737075593873710812, guid: a70ca3e7679fe6d4aa10c94a44f005f0, type: 3}
-  target: {fileID: 1416301133}
+  _shotPrefab: {fileID: 0}
+  _target: {fileID: 0}
+  _projectilPrefab: {fileID: 0}
 --- !u!114 &1389735542
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2070,11 +2069,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2ab56e18a7f83744a88451490f4c6d6d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerId: 1
-  DisqueAttackDeltaTime: 0
-  TimeBeforeHold: 0.2
-  shotPrefab: {fileID: 7737075593873710812, guid: a70ca3e7679fe6d4aa10c94a44f005f0, type: 3}
-  target: {fileID: 1416301133}
+  _shotPrefab: {fileID: 0}
+  _target: {fileID: 0}
+  _projectilPrefab: {fileID: 0}
 --- !u!114 &1716879497
 MonoBehaviour:
   m_ObjectHideFlags: 0

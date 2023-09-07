@@ -19,6 +19,8 @@ public class MenuController : MonoBehaviour
 
     private void Start()
     {
+        DOTween.Init();
+
         _onReadyPanel = false;
         _timer = 0;
 

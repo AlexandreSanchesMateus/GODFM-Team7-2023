@@ -1,122 +1,71 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
-using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
 public class PlayerScript : MonoBehaviour
 {
-    [SerializeField] private int playerId;
+    private PlayerManager.PlayerInfo _info;
 
-    private PlayerManager.PlayerInfo _playerInfo;
-    private List<EButtonColor> _pressedColors = new(3);
+    [SerializeField] private GameObject _shotPrefab;
+    [SerializeField] private GameObject _target;
 
-    // To be able to put cooldown on presses
-    // Should be handled by gamemanager imo to be able to easely use game state
-    [SerializeField] private int DisqueAttackDeltaTime;
-    private int TimeBetweenShots = 0;
+    [SerializeField] private GameObject _projectilPrefab;
 
-    [SerializeField] private float TimeBeforeHold = 0.2f; // Time before input is detected as held
+    private bool _coolDown = false;
+    private float _timeBetweenShots = 0;
+    private float _shotTimer;
 
-    private float shotTimer;
-    private float holdTimer;
 
-    [SerializeField] private GameObject shotPrefab;
-    [SerializeField] private GameObject target;
-
-    private Image LineRenderer;
-
-    // Start is called before the first frame update
-    void Start()
+    public void InitPlayer(PlayerManager.PlayerInfo info)
     {
-         _playerInfo = PlayerManager.PlayerInfos[playerId];   //doesn't seem to work
-        shotTimer = TimeBetweenShots;
+        _info = info;
+        _shotTimer = _timeBetweenShots;
     }
 
-    // Update is called once per frame
+    public void ChangeAttackParameters(float shotCooldown) => _timeBetweenShots = shotCooldown;
+
     void Update()
     {
-        bool canPress = false;
-        shotTimer += Time.deltaTime;
-        if (shotTimer >= TimeBetweenShots)
+        if (_info == null) return;
+
+        if (_coolDown)
         {
-            canPress = true;
-        }
-
-        if (!canPress) return;
-
-        foreach (KeyCode keyCode in _playerInfo.KeyColorDic.Keys.ToArray())
-        {
-            EButtonColor keycodeColor = _playerInfo.KeyColorDic[keyCode];
-
-            if (canPress && Input.GetKeyDown(keyCode))
+            _shotTimer += Time.deltaTime;
+            if(_shotTimer >= _timeBetweenShots)
             {
-                shotTimer = 0;
-                _pressedColors.Add(keycodeColor);
-
-                ProcessInput(true, keycodeColor);
-            }
-
-            if (Input.GetKeyUp(keyCode))
-            {
-                holdTimer = 0;
-                _pressedColors.Remove(keycodeColor);
-
-                ProcessInput(false, keycodeColor);
+                _coolDown = false;
+                _shotTimer = 0;
             }
         }
-
-        if (_pressedColors.Count != 0)
+        else
         {
-            if (holdTimer < TimeBeforeHold)
+            foreach(KeyValuePair<KeyCode, EButtonColor> keyValue in _info.KeyColorDic)
             {
-                holdTimer += Time.deltaTime;
-                return;
+                if (Input.GetKeyDown(keyValue.Key))
+                    ProcessInput(true, keyValue.Value);
+                else if (Input.GetKeyUp(keyValue.Key))
+                    ProcessInput(false, keyValue.Value);
             }
-
-            EButtonColor lastPressedInput = _pressedColors[0];
         }
     }
 
     private void ProcessInput(bool isPressed, EButtonColor color)
     {
-        if(isPressed)
-            ShowColorInput(color);
-
         switch (BossController.CurrentState)
         {
             case BossController.EBossState.ATTACK_DISQUE:
-                TimeBetweenShots = DisqueAttackDeltaTime;
-                if(isPressed)
-                    BossController.OnPlayerInput(playerId, color);
-                else
+                if (isPressed)
                 {
-                    BossController.OnPlayerInput(playerId, EButtonColor.NONE);
-                    DestroyColorInput();
+                    BossController.OnPlayerInput(_info.ID, color);
+                    StartCoroutine(BeamFade());
                 }
                 break;
 
             case BossController.EBossState.VULNERABLE:
-                TimeBetweenShots = 0;
-                break;
-
-            default:
-                if (_pressedColors.Count == 0)
-                    DestroyColorInput();
-                else if(LineRenderer != null)
-                    LineRenderer.color = PlayerManager.GetInputColor(_pressedColors[_pressedColors.Count - 1]);
+                
                 break;
         }
-    }
-
-    private void DestroyColorInput()
-    {
-        if (LineRenderer == null) return;
-
-        // Animation
-        Destroy(LineRenderer.gameObject);
     }
 
     private void ShowColorInput(EButtonColor inputColor)
@@ -124,20 +73,23 @@ public class PlayerScript : MonoBehaviour
         Color32 color = PlayerManager.GetInputColor(inputColor);
 
         Vector3 selfPos = gameObject.transform.position;
-        Vector3 targetPos = target.transform.position;
-        
-        Debug.Log($"SelfPos:{selfPos} ||targetPos:{targetPos}");
+        Vector3 targetPos = _target.transform.position;
         
         Vector3 direction =  selfPos - targetPos;
         float distance = direction.magnitude;
         direction /= distance;
-        Debug.Log($"Distance:{distance}");
-        
+
         Quaternion angle = Quaternion.AngleAxis(Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg, Vector3.forward);
 
-        LineRenderer = Instantiate(shotPrefab, selfPos, angle, gameObject.transform).GetComponent<Image>();
-        LineRenderer.color = color;
-        RectTransform rect = LineRenderer.GetComponent<RectTransform>();
+        Image Beam = Instantiate(_shotPrefab, selfPos, angle, gameObject.transform).GetComponent<Image>();
+        Beam.color = color;
+        RectTransform rect = Beam.GetComponent<RectTransform>();
         rect.sizeDelta = new Vector2(rect.sizeDelta.x, distance);
+    }
+
+    private IEnumerator BeamFade()
+    {
+        yield return new WaitForSeconds(0.8f);
+        BossController.OnPlayerInput(_info.ID, EButtonColor.NONE);
     }
 }

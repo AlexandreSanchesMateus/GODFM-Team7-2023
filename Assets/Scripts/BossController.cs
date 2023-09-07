@@ -61,6 +61,11 @@ public class BossController : MonoBehaviour
     {
         _bossAnimator = gameObject.GetComponent<Animator>();
 
+        for (int i = 0; i < PlayerManager.PlayerInfos.Count; i++)
+        {
+            players[i].InitPlayer(PlayerManager.PlayerInfos[i]);
+        }
+
         currentPlayersInput = new List<EButtonColor>(PlayerManager.PlayerInfos.Count);
         fill.fillAmount = 1;
         _currentState = EBossState.NONE;
