@@ -40,6 +40,7 @@ public class BossController : MonoBehaviour
     [SerializeField] private List<PlayerScript> players;
     [SerializeField] private Image _imgHypnoLevel;
     [SerializeField] private TextMeshProUGUI _textTimer;
+    [SerializeField] private Animator _backgroundAnimator;
     [SerializeField] private List<Image> _bossEyes;
     [SerializeField] private List<Transform> _bossEyesTransform;
     [Header("General Settings")]
@@ -48,7 +49,7 @@ public class BossController : MonoBehaviour
     [SerializeField, Tooltip("Value 1 correspond to the gain of 1 hypnitic level every seconds.")] private float _hypnoLevelSpeed = 1;
     [SerializeField] private int _maxPv;
     [SerializeField] private float _playerDamage;
-    // [SerializeField] private Image fill;
+    [SerializeField] private HealthBar _healthBar;
     [Header("Attack Phase")]
     [SerializeField] private float _delayBetweenAttack;
     [Header("Vulnerability phase")]
@@ -85,7 +86,7 @@ public class BossController : MonoBehaviour
         }
 
         currentPlayersInput = new List<EButtonColor>{ EButtonColor.NONE, EButtonColor.NONE, EButtonColor.NONE, EButtonColor.NONE };
-        // fill.fillAmount = 1;
+        _healthBar.InitializeHealthBar(_maxPv);
         _currentState = EBossState.NONE;
 
         Invoke(nameof(OnInitializationEnd), _activationTime);
@@ -132,6 +133,7 @@ public class BossController : MonoBehaviour
         {
             // Disque of color
             case EBossState.ATTACK_DISQUE:
+                _bossAnimator.SetBool("Pendule", true);
                 _increaseHypnoLevel = true;
                 players.ForEach(p =>
                 {
@@ -150,7 +152,9 @@ public class BossController : MonoBehaviour
                     p.ChangeAttackParameters(hypnoShotCooldown); 
                     p.SetLaserTarget(_bossEyesTransform); 
                 });
-                _increaseHypnoLevel = true;
+                _backgroundAnimator.SetBool("Psycho", true);
+                _bossAnimator.SetBool("Pendule", false);
+                _increaseHypnoLevel = false;
                 InitHypnoAttack();
                 break;
 
@@ -168,13 +172,13 @@ public class BossController : MonoBehaviour
 
             // Boss Dead
             case EBossState.DEATH:
-                
                 // Animation
                 // WARNING NEED DELAI BEFOR LOAD NEXT SCENE //
-
+                _increaseHypnoLevel = false;
                 _timeElapse = false;
+                _bossAnimator.SetBool("Pendule", false);
                 PlayerManager.SetEndTimer(_timeInGame);
-                CustomSceneManager.LoadEndGame(true);
+                players.ForEach(p => p.SetActivePlayer(false));
                 break;
         }
 
@@ -190,6 +194,7 @@ public class BossController : MonoBehaviour
         _timeElapse = true;
         _currentState = EBossState.ATTACK_DISQUE;
         players.ForEach(p => p.SetActivePlayer(true));
+        _bossAnimator.SetBool("Pendule", true);
     }
 
     public void OnRecoverEnd()
@@ -215,9 +220,6 @@ public class BossController : MonoBehaviour
                 if (color != EButtonColor.NONE)
                     TakeDamage();
                 break;
-
-            default:
-                break;
         }
     }
 
@@ -227,6 +229,7 @@ public class BossController : MonoBehaviour
         {
             _currentState = EBossState.HYPNOTIC_PHASE;
             _increaseHypnoLevel = false;
+            _currentHypnoLevel = 0;
         }
     }
 
@@ -312,10 +315,12 @@ public class BossController : MonoBehaviour
         if (barrierLevel == 2)
         {
             //BarrierScript.SetState(false);
-            _currentState = EBossState.ATTACK_DISQUE;
+            _backgroundAnimator.SetBool("Psycho", false);
+            _currentState = EBossState.NONE;
+            StartCoroutine(DelayState(EBossState.ATTACK_DISQUE, 1f));
             return;
-            //_currentState = EBossState.DEATH;
         }
+
         players.ForEach(p =>
         {
             p.SetLaserTarget(BarrierScript.GetPointsTransforms(barrierLevel));
@@ -324,14 +329,12 @@ public class BossController : MonoBehaviour
 
     private static void TakeDamage()
     {
-        // Animation
         Instance._currentPV -= Instance._playerDamage;
-        // Instance.fill.fillAmount = Instance._currentPV / Instance._maxPv;
+        Instance._healthBar.UpdateHealthValue(Instance._currentPV);
+
+        // Death
         if (Instance._currentPV <= 0)
-        {
-            //DEATH
-            //Instance._currentState = EBossState.DEATH;
-        }
+            Instance._currentState = EBossState.DEATH;
     }
 
     public static void DoShake()
@@ -367,6 +370,12 @@ public class BossController : MonoBehaviour
         {
             OnPlayerInput(i, barriers[barrierLevel].neededColors[i]);
         }
+    }
+
+    private IEnumerator LoadLeaderBoard()
+    {
+        yield return new WaitForSeconds(2);
+        CustomSceneManager.LoadEndGame(true);
     }
 }
 

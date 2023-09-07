@@ -27,7 +27,7 @@ public class HealthBar : MonoBehaviour
         _currentSection = _sections.Count - 1;
     }
 
-    public void UpdateHealthValue(int currentHealth)
+    public void UpdateHealthValue(float currentHealth)
     {
         int sectionDamaged = (int)((_toalePV - currentHealth) / _sectionValue);
         float pourcent = currentHealth % _sectionValue * 100 / _toalePV;

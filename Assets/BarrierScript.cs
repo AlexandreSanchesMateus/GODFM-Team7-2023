@@ -35,9 +35,7 @@ public class BarrierScript : MonoBehaviour
         {
             for (int j = 0; j < _instance.Balls[i].Count; j++)
             {
-
                 _instance.Balls[i][j].color = PlayerManager.GetInputColor(barriers[i].neededColors[j]);
-
             }
         }
     }
@@ -62,7 +60,7 @@ public class BarrierScript : MonoBehaviour
 
     public static void SetState(bool state)
     {
-        foreach (var barrier in _instance.barriers)
+        foreach (GameObject barrier in _instance.barriers)
         {
             barrier.SetActive(state);
         }
@@ -92,7 +90,7 @@ public class Barrier
             }
         }
 
-        foreach (var color in possibleColors)        
+        foreach (List<EButtonColor> color in possibleColors)        
         {
             neededColors.Add(color[0]);
         }

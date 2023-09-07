@@ -1267,33 +1267,33 @@ MonoBehaviour:
     rgba: 4278248191
   _setupPlayers:
   - _buttonInverted: 0
-    _colorLeft: 3
-    _keyLeft: 256
-    _colorRight: 1
-    _keyRight: 257
-    _colorVerticale: 0
-    _keyVerticale: 258
+    _colorLeft: 1
+    _keyLeft: 122
+    _colorRight: 0
+    _keyRight: 101
+    _colorVerticale: 3
+    _keyVerticale: 97
   - _buttonInverted: 1
     _colorLeft: 0
-    _keyLeft: 259
+    _keyLeft: 114
     _colorRight: 1
-    _keyRight: 260
+    _keyRight: 116
     _colorVerticale: 2
-    _keyVerticale: 261
+    _keyVerticale: 121
   - _buttonInverted: 0
     _colorLeft: 2
-    _keyLeft: 262
+    _keyLeft: 105
     _colorRight: 3
-    _keyRight: 263
+    _keyRight: 111
     _colorVerticale: 0
-    _keyVerticale: 264
+    _keyVerticale: 117
   - _buttonInverted: 1
-    _colorLeft: 2
-    _keyLeft: 267
-    _colorRight: 1
-    _keyRight: 268
-    _colorVerticale: 3
-    _keyVerticale: 269
+    _colorLeft: 3
+    _keyLeft: 112
+    _colorRight: 2
+    _keyRight: 113
+    _colorVerticale: 1
+    _keyVerticale: 115
   scores: []
   Projectile: {fileID: 0}
 --- !u!4 &1586838103
