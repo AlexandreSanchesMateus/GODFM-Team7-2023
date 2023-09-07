@@ -121,23 +121,28 @@ public class PlayerScript : MonoBehaviour
 
     private void ShowColorInput(EButtonColor inputColor)
     {
-        Color32 color = PlayerManager.GetInputColor(inputColor);
+        // Color32 color = PlayerManager.GetInputColor(inputColor);
+        //
+        // Vector3 selfPos = gameObject.transform.position;
+        // Vector3 targetPos = target.transform.position;
+        //
+        // Debug.Log($"SelfPos:{selfPos} ||targetPos:{targetPos}");
+        //
+        // Vector3 direction =  selfPos - targetPos;
+        // float distance = direction.magnitude;
+        // direction /= distance;
+        // Debug.Log($"Distance:{distance}");
+        //
+        // Quaternion angle = Quaternion.AngleAxis(Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg, Vector3.forward);
+        //
+        // LineRenderer = Instantiate(shotPrefab, selfPos, angle, gameObject.transform).GetComponent<Image>();
+        // LineRenderer.color = color;
+        // RectTransform rect = LineRenderer.GetComponent<RectTransform>();
+        // rect.sizeDelta = new Vector2(rect.sizeDelta.x, distance);
 
-        Vector3 selfPos = gameObject.transform.position;
-        Vector3 targetPos = target.transform.position;
-        
-        Debug.Log($"SelfPos:{selfPos} ||targetPos:{targetPos}");
-        
-        Vector3 direction =  selfPos - targetPos;
-        float distance = direction.magnitude;
-        direction /= distance;
-        Debug.Log($"Distance:{distance}");
-        
-        Quaternion angle = Quaternion.AngleAxis(Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg, Vector3.forward);
+        Projectil proj = Instantiate(PlayerManager.Instance.Projectile, transform.position, Quaternion.identity)
+            .GetComponent<Projectil>();
+        proj.Target = target;
 
-        LineRenderer = Instantiate(shotPrefab, selfPos, angle, gameObject.transform).GetComponent<Image>();
-        LineRenderer.color = color;
-        RectTransform rect = LineRenderer.GetComponent<RectTransform>();
-        rect.sizeDelta = new Vector2(rect.sizeDelta.x, distance);
     }
 }

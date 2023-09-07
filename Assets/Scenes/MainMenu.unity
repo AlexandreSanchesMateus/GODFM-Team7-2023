@@ -1221,6 +1221,7 @@ MonoBehaviour:
     _colorVerticale: 3
     _keyVerticale: 258
   scores: []
+  Projectile: {fileID: 5318953962137752771, guid: 00eb27f03a05a444a87a29c8e29df4cb, type: 3}
 --- !u!1 &1586838101
 GameObject:
   m_ObjectHideFlags: 0
@@ -1292,6 +1293,7 @@ MonoBehaviour:
     _colorVerticale: 3
     _keyVerticale: 269
   scores: []
+  Projectile: {fileID: 0}
 --- !u!4 &1586838103
 Transform:
   m_ObjectHideFlags: 0
