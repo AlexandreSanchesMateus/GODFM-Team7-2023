@@ -874,9 +874,10 @@ MonoBehaviour:
   _hypnoLevelSpeed: 1
   _maxPv: 100
   _playerDamage: 0
-  fill: {fileID: 1351303624}
   _delayBetweenAttack: 1.4
   _vulnerabilityTime: 5
+  diskShotCooldown: 1
+  hypnoShotCooldown: 0.1
 --- !u!1 &558965051
 GameObject:
   m_ObjectHideFlags: 0
@@ -1045,6 +1046,9 @@ MonoBehaviour:
   _beamPrefab: {fileID: 7737075593873710812, guid: a70ca3e7679fe6d4aa10c94a44f005f0, type: 3}
   _target: {fileID: 468277055}
   _projectilPrefab: {fileID: 0}
+  laserParent: {fileID: 0}
+  laserStart: {fileID: 0}
+  laserTarget: {fileID: 0}
 --- !u!1 &712299634
 GameObject:
   m_ObjectHideFlags: 0
@@ -1169,19 +1173,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 794327738}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f374e250e3960b640984ccae3dcf83b7, type: 3}
+  m_Script: {fileID: 11500000, guid: bdef7b2db7093694c9a8bd996050ba7c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  barrier1:
-  - {fileID: 712299636}
-  - {fileID: 558965053}
-  - {fileID: 207294218}
-  - {fileID: 1050534648}
-  barrier2:
-  - {fileID: 1038227618}
-  - {fileID: 977340085}
-  - {fileID: 2070865167}
-  - {fileID: 1374411324}
+  barrier1: []
+  barrier2: []
 --- !u!1 &803696512
 GameObject:
   m_ObjectHideFlags: 0
@@ -1352,6 +1348,9 @@ MonoBehaviour:
   _beamPrefab: {fileID: 7737075593873710812, guid: a70ca3e7679fe6d4aa10c94a44f005f0, type: 3}
   _target: {fileID: 468277055}
   _projectilPrefab: {fileID: 0}
+  laserParent: {fileID: 0}
+  laserStart: {fileID: 0}
+  laserTarget: {fileID: 0}
 --- !u!114 &881761906
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2145,6 +2144,9 @@ MonoBehaviour:
   _beamPrefab: {fileID: 7737075593873710812, guid: a70ca3e7679fe6d4aa10c94a44f005f0, type: 3}
   _target: {fileID: 468277055}
   _projectilPrefab: {fileID: 0}
+  laserParent: {fileID: 0}
+  laserStart: {fileID: 0}
+  laserTarget: {fileID: 0}
 --- !u!114 &1389735542
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2708,6 +2710,9 @@ MonoBehaviour:
   _beamPrefab: {fileID: 7737075593873710812, guid: a70ca3e7679fe6d4aa10c94a44f005f0, type: 3}
   _target: {fileID: 468277055}
   _projectilPrefab: {fileID: 0}
+  laserParent: {fileID: 0}
+  laserStart: {fileID: 0}
+  laserTarget: {fileID: 0}
 --- !u!114 &1716879497
 MonoBehaviour:
   m_ObjectHideFlags: 0

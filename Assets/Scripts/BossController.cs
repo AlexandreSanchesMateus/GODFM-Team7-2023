@@ -40,6 +40,7 @@ public class BossController : MonoBehaviour
     [SerializeField] private Image _imgHypnoLevel;
     [SerializeField] private TextMeshProUGUI _textTimer;
     [SerializeField] private List<Image> _bossEyes;
+    [SerializeField] private List<Transform> _bossEyesTransform;
     [Header("General Settings")]
     [SerializeField] private float _activationTime;
     [SerializeField] private int _maxHypnoLevel;
@@ -111,7 +112,11 @@ public class BossController : MonoBehaviour
             // Disque of color
             case EBossState.ATTACK_DISQUE:
                 _increaseHypnoLevel = true;
-                players.ForEach(p => p.ChangeAttackParameters(diskShotCooldown));
+                players.ForEach(p =>
+                {
+                    p.ChangeAttackParameters(diskShotCooldown); 
+                    p.SetLaserTarget(_bossEyesTransform); 
+                });
                 InitDisqueAttack();
                 break;
 
@@ -249,6 +254,10 @@ public class BossController : MonoBehaviour
         barrierLevel = 0;
         barriers = new List<Barrier>(2) { new(), new() };
         BarrierScript.InitBarrierVisuals(barriers);
+        players.ForEach(p =>
+        {
+            p.SetLaserTarget(BarrierScript.GetPointsTransforms(barrierLevel));
+        });
     }
 
     private void CheckHypnoEnd()
@@ -265,8 +274,13 @@ public class BossController : MonoBehaviour
 
         BarrierScript.RemoveBarrier(barrierLevel);
         barrierLevel++;
+        players.ForEach(p =>
+        {
+            p.SetLaserTarget(BarrierScript.GetPointsTransforms(barrierLevel));
+        });
         if (barrierLevel == 2)
         {
+            BarrierScript.SetState(false);
             _currentState = EBossState.ATTACK_DISQUE;
             //_currentState = EBossState.DEATH;
         }
