@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using DG.Tweening;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
@@ -40,6 +41,7 @@ public class BossController : MonoBehaviour
     [SerializeField] private Image _imgHypnoLevel;
     [SerializeField] private TextMeshProUGUI _textTimer;
     [SerializeField] private List<Image> _bossEyes;
+    [SerializeField] private List<Transform> _bossEyesTransform;
     [Header("General Settings")]
     [SerializeField] private float _activationTime;
     [SerializeField] private int _maxHypnoLevel;
@@ -51,14 +53,22 @@ public class BossController : MonoBehaviour
     [SerializeField] private float _delayBetweenAttack;
     [Header("Vulnerability phase")]
     [SerializeField] private float _vulnerabilityTime;
-
+    private float _vulnerabilityTimer;
+    
     private List<Barrier> barriers;
     private int barrierLevel;
 
+    [Header("Shooting Cooldowns")]
     [SerializeField]
     private float diskShotCooldown = 1f;
     [SerializeField]
     private float hypnoShotCooldown = 0.1f;
+    [SerializeField]
+    private float vulnShotCooldown = 0.1f;
+    
+    [Header("References")]
+    [SerializeField] private Transform bossBody;
+    
 
     private void Awake()
     {
@@ -103,28 +113,57 @@ public class BossController : MonoBehaviour
             _textTimer.text = string.Format("{0}.{1}.{2}", minutes, secound, milisecound);
         }
 
+        if (_currentState == EBossState.VULNERABLE)
+        {
+            _vulnerabilityTimer += Time.deltaTime;
+            if (_vulnerabilityTimer >= _vulnerabilityTime)
+            {
+                _currentState = EBossState.NONE;
+                StartCoroutine(DelayState(EBossState.ATTACK_DISQUE, 1f));
+            }
+        }
+
         // STATE MACHINE
         if (_previousState == _currentState) return;
-
+        
+        currentPlayersInput = new List<EButtonColor>{ EButtonColor.NONE, EButtonColor.NONE, EButtonColor.NONE, EButtonColor.NONE };
+        
         switch (_currentState)
         {
             // Disque of color
             case EBossState.ATTACK_DISQUE:
                 _increaseHypnoLevel = true;
-                players.ForEach(p => p.ChangeAttackParameters(diskShotCooldown));
+                players.ForEach(p =>
+                {
+                    p.ChangeAttackParameters(diskShotCooldown); 
+                    p.SetLaserTarget(_bossEyesTransform); 
+                });
                 InitDisqueAttack();
                 break;
 
             // Minigame when the level of hypnose is at its maximum
             case EBossState.HYPNOTIC_PHASE:
+                // TODO: Maybe disable completely the eyes?                
+                _bossEyes.ForEach(img => img.color = Color.white);
+                players.ForEach(p =>
+                {
+                    p.ChangeAttackParameters(hypnoShotCooldown); 
+                    p.SetLaserTarget(_bossEyesTransform); 
+                });
                 _increaseHypnoLevel = true;
                 InitHypnoAttack();
                 break;
 
             // Players can damage the boss
             case EBossState.VULNERABLE:
-                players.ForEach(p => p.ChangeAttackParameters(hypnoShotCooldown));
+                players.ForEach(p =>
+                {
+                    p.ChangeAttackParameters(vulnShotCooldown); 
+                    p.SetLaserTarget(gameObject.transform); 
+                });
+                _bossEyes.ForEach(img => img.color = Color.white);
                 _increaseHypnoLevel = false;
+                _vulnerabilityTimer = 0;
                 break;
 
             // Boss Dead
@@ -140,6 +179,7 @@ public class BossController : MonoBehaviour
         }
 
         _previousState = _currentState;
+        _bossAnimator.SetInteger("State", (int)_currentState);
     }
 
     
@@ -249,6 +289,10 @@ public class BossController : MonoBehaviour
         barrierLevel = 0;
         barriers = new List<Barrier>(2) { new(), new() };
         BarrierScript.InitBarrierVisuals(barriers);
+        players.ForEach(p =>
+        {
+            p.SetLaserTarget(BarrierScript.GetPointsTransforms(barrierLevel));
+        });
     }
 
     private void CheckHypnoEnd()
@@ -267,9 +311,15 @@ public class BossController : MonoBehaviour
         barrierLevel++;
         if (barrierLevel == 2)
         {
+            //BarrierScript.SetState(false);
             _currentState = EBossState.ATTACK_DISQUE;
+            return;
             //_currentState = EBossState.DEATH;
         }
+        players.ForEach(p =>
+        {
+            p.SetLaserTarget(BarrierScript.GetPointsTransforms(barrierLevel));
+        });
     }
 
     private static void TakeDamage()
@@ -277,12 +327,16 @@ public class BossController : MonoBehaviour
         // Animation
         Instance._currentPV -= Instance._playerDamage;
         // Instance.fill.fillAmount = Instance._currentPV / Instance._maxPv;
-
         if (Instance._currentPV <= 0)
         {
             //DEATH
-            Instance._currentState = EBossState.DEATH;
+            //Instance._currentState = EBossState.DEATH;
         }
+    }
+
+    public static void DoShake()
+    {
+        Instance.bossBody.DOShakePosition(0.5f, new Vector3(1, 1, 0), 10, 60);
     }
     
     #endregion
@@ -292,6 +346,12 @@ public class BossController : MonoBehaviour
     public void GoHypno()
     {
         _currentState = EBossState.HYPNOTIC_PHASE;
+    }
+    
+    [ContextMenu("Go Vuln")]
+    public void GoVuln()
+    {
+        _currentState = EBossState.VULNERABLE;
     }
     
     [ContextMenu("ResetHypno")]

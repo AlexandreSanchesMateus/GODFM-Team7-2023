@@ -1,7 +1,9 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 using Random = UnityEngine.Random;
 
@@ -11,20 +13,24 @@ public class BarrierScript : MonoBehaviour
     
     private List<List<Image>> Balls = new();
 
-    [SerializeField]
-    private List<Image> barrier1;
-    [SerializeField]
-    private List<Image> barrier2;
+    [FormerlySerializedAs("barrier1")] [SerializeField]
+    private List<Image> barrier1Imgs;
+    [FormerlySerializedAs("barrier2")] [SerializeField]
+    private List<Image> barrier2Imgs;
+
+    [SerializeField] private List<GameObject> barriers;
 
 
     private void Awake()
     {
         _instance = this;
-        Balls = new List<List<Image>>(2) { barrier1, barrier2 };
+        Balls = new List<List<Image>>(2) { barrier1Imgs, barrier2Imgs };
+        SetState(false);
     }
 
     public static void InitBarrierVisuals(List<Barrier> barriers)
     {
+        SetState(true);
         for (int i = 0; i < barriers.Count; i++)
         {
             for (int j = 0; j < _instance.Balls[i].Count; j++)
@@ -36,11 +42,29 @@ public class BarrierScript : MonoBehaviour
         }
     }
 
+    public static List<Transform> GetPointsTransforms(int barrierLevel)
+    {
+        List<Transform> temp = new List<Transform>(4);
+        
+        temp.AddRange(_instance.Balls[barrierLevel].Select(image => image.gameObject.transform));
+
+        return temp;
+    }
+
     public static void RemoveBarrier(int barrierLevel)
     {
         foreach (var images in _instance.Balls[barrierLevel])
         {
             images.color = PlayerManager.GetInputColor(EButtonColor.NONE);
+        }
+        _instance.barriers[barrierLevel].SetActive(false);
+    }
+
+    public static void SetState(bool state)
+    {
+        foreach (var barrier in _instance.barriers)
+        {
+            barrier.SetActive(state);
         }
     }
 }

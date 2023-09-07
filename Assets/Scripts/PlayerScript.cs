@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 public class PlayerScript : MonoBehaviour
@@ -12,6 +13,9 @@ public class PlayerScript : MonoBehaviour
     [SerializeField] private GameObject _target;
 
     [SerializeField] private GameObject _projectilPrefab;
+    [SerializeField] private Transform laserParent;
+    [SerializeField] private Transform laserStart;
+    [FormerlySerializedAs("laserTarget")] [SerializeField] private Transform target;
 
     private bool _coolDown = false;
     private float _timeBetweenShots = 0;
@@ -30,6 +34,16 @@ public class PlayerScript : MonoBehaviour
     {
         _timeBetweenShots = shotCooldown;
         _shotTimer = _timeBetweenShots;
+    }
+
+    public void SetLaserTarget(List<Transform> transforms)
+    {
+        target = transforms[_info.ID];
+    }
+    
+    public void SetLaserTarget(Transform gameObjectTransform)
+    {
+        target = gameObjectTransform;
     }
 
     public void SetActivePlayer(bool state)
@@ -82,33 +96,56 @@ public class PlayerScript : MonoBehaviour
                     StartCoroutine(BeamFade());
                 }
                 break;
+            
+            case BossController.EBossState.HYPNOTIC_PHASE:
+                if (isPressed)
+                {
+                    InstanciateBeam(color);
+                    BossController.OnPlayerInput(_info.ID, color);
+                    StartCoroutine(BeamFade());
+                }
+                break;
 
             case BossController.EBossState.VULNERABLE:
-                
+                if (isPressed)
+                {
+                    InstantiateProjectile(color);
+                    BossController.OnPlayerInput(_info.ID, color);
+                }
                 break;
         }
 
+    }
+
+    private void InstantiateProjectile(EButtonColor color)
+    {
+        Projectil proj = Instantiate(_projectilPrefab, transform.position, Quaternion.identity, laserParent).GetComponent<Projectil>();
+        proj.Target = _target;
+        proj.GetComponent<Image>().color = PlayerManager.GetInputColor(color);
     }
 
     private void InstanciateBeam(EButtonColor inputColor)
     {
         Color32 color = PlayerManager.GetInputColor(inputColor);
 
-        Vector3 selfPos = gameObject.transform.position;
-        Vector3 targetPos = _target.transform.position;
+        Vector3 startPos = laserStart.position;
+        Vector3 targetPos = target.position;
         
-        Vector3 direction =  selfPos - targetPos;
+        Vector3 direction =  startPos - targetPos;
         float distance = direction.magnitude;
+        // Debug.Log($"{startPos.x} - {targetPos.x} || {startPos.y} - {targetPos.y} || {startPos.z} - {targetPos.z}");
+        distance *= 28.5f; // I have no idea why but this is the value that works
+        Debug.Log(distance);
         direction /= distance;
         
 
         Quaternion angle = Quaternion.AngleAxis(Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg, Vector3.forward);
 
-        _beam = Instantiate(_beamPrefab, selfPos, angle, gameObject.transform).GetComponent<Image>();
+        _beam = Instantiate(_beamPrefab, startPos, angle, laserParent).GetComponent<Image>();
         _beam.color = color;
         RectTransform rect = _beam.GetComponent<RectTransform>();
         // distance = (int)((distance - 624) / 160) * 160 + 624;
-        distance = (int)((distance - 39) / 10) * 10 + 39;
+        //distance = (int)((distance - 39) / 10) * 10 + 39;
         rect.sizeDelta = new Vector2(distance, rect.sizeDelta.y);
     }
 
