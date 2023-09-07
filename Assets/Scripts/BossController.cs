@@ -37,7 +37,7 @@ public class BossController : MonoBehaviour
     private float _timeInGame = 0.0001F;
 
     [Header("UI")]
-    [SerializeField] private List<PlayerScript> 
+    [SerializeField] private List<PlayerScript> players;
     [SerializeField] private Image _imgHypnoLevel;
     [SerializeField] private TextMeshProUGUI _textTimer;
     [SerializeField] private List<Image> _bossEyes;
@@ -162,7 +162,7 @@ public class BossController : MonoBehaviour
 
             case EBossState.VULNERABLE:
                 if (color != EButtonColor.NONE)
-                    Instance.TakeDamage();
+                    TakeDamage();
                 break;
 
             default:
