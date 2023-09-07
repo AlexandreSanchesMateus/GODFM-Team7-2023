@@ -25,7 +25,7 @@ public class Projectil : MonoBehaviour
 
         Vector2 perpDirection = Vector2.Perpendicular(centerPoint).normalized;
 
-        Vector2 midPoint = centerPoint + perpDirection * Random.Range(0.1f, maxOffset) * directions[Random.Range(0, 2)];
+        Vector2 midPoint = centerPoint + perpDirection * Random.Range(0.2f, maxOffset) * directions[Random.Range(0, 2)];
 
         List<Vector3> waypoints = new List<Vector3>() {midPoint};
 
@@ -35,25 +35,25 @@ public class Projectil : MonoBehaviour
         Vector2 handlesDirection = centerPoint.normalized;
         foreach (int dir in directions)
         {
-            midpointsHandles.Add(midPoint + handlesDirection * Random.Range(0.1f, maxOffset) * dir);
+            midpointsHandles.Add(midPoint + handlesDirection * Random.Range(0.2f, maxOffset) * dir);
         }
         
         // Starting point handle
         Vector2 direction1 = (midpointsHandles[0] - startPos).normalized;
-        Vector2 startHandle = startPos + direction1 * Random.Range(0.1f, maxOffset);
+        Vector2 startHandle = startPos + direction1 * Random.Range(0.2f, maxOffset);
         
-        waypoints.Add(midpointsHandles[0]);
         waypoints.Add(startHandle);
+        waypoints.Add(midpointsHandles[0]);
         waypoints.Add(targetPos);
         waypoints.Add(midpointsHandles[1]);
         
         // target point handle
         Vector2 direction2 = (midpointsHandles[1] - targetPos).normalized;
-        Vector2 targetHandle = startPos + direction2 * Random.Range(0.1f, maxOffset);
+        Vector2 targetHandle = targetPos + direction2 * Random.Range(0.2f, maxOffset);
         
         waypoints.Add(targetHandle);
-        
-        transform.DOPath(waypoints.ToArray(), duration, PathType.CubicBezier, PathMode.Ignore, 5);
+
+        transform.DOPath(waypoints.ToArray(), duration, PathType.CubicBezier, resolution:5).SetEase(Ease.OutCirc);
         
     }
 
