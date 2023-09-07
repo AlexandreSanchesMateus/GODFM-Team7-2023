@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using DG.Tweening;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
@@ -55,6 +56,8 @@ public class BossController : MonoBehaviour
 
     private List<Barrier> barriers;
     private int barrierLevel;
+
+    [SerializeField] private Transform bossBody;
 
     [SerializeField]
     private float diskShotCooldown = 1f;
@@ -306,12 +309,16 @@ public class BossController : MonoBehaviour
         // Animation
         Instance._currentPV -= Instance._playerDamage;
         // Instance.fill.fillAmount = Instance._currentPV / Instance._maxPv;
-
         if (Instance._currentPV <= 0)
         {
             //DEATH
             //Instance._currentState = EBossState.DEATH;
         }
+    }
+
+    public static void DoShake()
+    {
+        Instance.bossBody.DOShakePosition(0.5f, new Vector3(1, 1, 0), 10, 60);
     }
     
     #endregion

@@ -62,7 +62,8 @@ public class Projectil : MonoBehaviour
     void DestroyProjectile()
     {
         // An explosion sprite was wandering around so I used it here, totally fine to use another one or remove it
-        Instantiate(explosionPrefab, transform.position + new Vector3(Random.Range(-0.5f, 0.5f), Random.Range(-0.5f, 0.5f), 0), Quaternion.identity);
+        Instantiate(explosionPrefab, transform.position + new Vector3(Random.Range(-0.75f, 0.75f), Random.Range(-0.75f, 0.75f), 0), Quaternion.identity);
+        BossController.DoShake();
         Destroy(gameObject);
     }
 }

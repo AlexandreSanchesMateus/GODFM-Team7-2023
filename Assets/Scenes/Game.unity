@@ -1469,6 +1469,7 @@ MonoBehaviour:
   _playerDamage: 0
   _delayBetweenAttack: 1.4
   _vulnerabilityTime: 5
+  bossBody: {fileID: 1416301134}
   diskShotCooldown: 1
   hypnoShotCooldown: 0.1
   vulnShotCooldown: 0.1
