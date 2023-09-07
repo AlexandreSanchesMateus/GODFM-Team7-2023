@@ -93,7 +93,7 @@ public class ButtonDisplay : MonoBehaviour
         CheckAllActive();
     }
 
-    public void MoveShapeTo(Vector2 wordPos, float time) => gameObject.transform.DOMove(wordPos, time, true).SetEase(Ease.OutQuad);
+    public void MoveShapeTo(Vector2 wordPos, float time) => gameObject.transform.DOMove(wordPos, time).SetEase(Ease.OutQuad);
 
     private void CheckAllActive()
     {
