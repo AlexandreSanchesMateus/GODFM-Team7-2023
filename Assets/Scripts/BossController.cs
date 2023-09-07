@@ -162,6 +162,7 @@ public class BossController : MonoBehaviour
         }
 
         _previousState = _currentState;
+        _bossAnimator.SetInteger("State", (int)_currentState);
     }
 
     
