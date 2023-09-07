@@ -16,7 +16,9 @@ public enum EButtonColor
 public class PlayerManager : MonoBehaviour
 {
     #region Variables
-    private static PlayerManager Instance;
+
+    // TODO: Change back to public later
+    public static PlayerManager Instance;
 
     public static Color32 ColorBlue => Instance._blue;
     public static Color32 ColorRed => Instance._red;
@@ -24,14 +26,18 @@ public class PlayerManager : MonoBehaviour
     public static Color32 ColorYellow => Instance._yellow;
     public static List<PlayerInfo> PlayerInfos => Instance._setupPlayers;
 
-    [Header("Color Reference")]
-    [SerializeField] private Color32 _blue;
+    [Header("Color Reference")] [SerializeField]
+    private Color32 _blue;
+
     [SerializeField] private Color32 _red;
     [SerializeField] private Color32 _green;
     [SerializeField] private Color32 _yellow;
     [SerializeField] private List<PlayerInfo> _setupPlayers;
 
     public static float Timer { get; private set; }
+    [SerializeField] public List<float> scores = new(5);
+
+
 
     [Serializable]
     public class PlayerInfo
@@ -45,45 +51,52 @@ public class PlayerManager : MonoBehaviour
 
         [SerializeField] private bool _buttonInverted;
 
-        [Header("Left Button")]
-        [SerializeField] private EButtonColor _colorLeft;
+        [Header("Left Button")] [SerializeField]
+        private EButtonColor _colorLeft;
+
         [SerializeField] private KeyCode _keyLeft;
 
-        [Header("Right Button")]
-        [SerializeField] private EButtonColor _colorRight;
+        [Header("Right Button")] [SerializeField]
+        private EButtonColor _colorRight;
+
         [SerializeField] private KeyCode _keyRight;
 
-        [Header("Vertical Button")]
-        [SerializeField] private EButtonColor _colorVerticale;
+        [Header("Vertical Button")] [SerializeField]
+        private EButtonColor _colorVerticale;
+
         [SerializeField] private KeyCode _keyVerticale;
 
         public void SetPlayerID(int newId) => ID = newId;
 
         public void SetKeyColorDic()
         {
-            KeyColorDic = new() {
-                { _keyLeft, _colorLeft},
-                {_keyRight, _colorRight},
-                {_keyVerticale,_colorVerticale}
+            KeyColorDic = new()
+            {
+                { _keyLeft, _colorLeft },
+                { _keyRight, _colorRight },
+                { _keyVerticale, _colorVerticale }
             };
         }
 
         public void SetKeyPosDic()
         {
-            KeyPosDic = new() {
-                { _keyLeft, "Left"},
-                {_keyRight, "Right"},
-                {_keyVerticale,"Vertical"}
+            KeyPosDic = new()
+            {
+                { _keyLeft, "Left" },
+                { _keyRight, "Right" },
+                { _keyVerticale, "Vertical" }
             };
         }
-        
+
     }
+
     #endregion
 
     #region Unity Methode
+
     private void Awake()
     {
-        if(Instance != null)
+        if (Instance != null)
         {
             Destroy(gameObject);
         }
@@ -100,9 +113,10 @@ public class PlayerManager : MonoBehaviour
                 playerInfo.SetKeyColorDic();
                 playerInfo.SetKeyPosDic();
             }
-            
+
         }
     }
+
     #endregion
 
     public static Color32 GetInputColor(EButtonColor inputColor)
@@ -110,17 +124,26 @@ public class PlayerManager : MonoBehaviour
         switch (inputColor)
         {
             case EButtonColor.RED:
-                return PlayerManager.ColorRed;
+                return ColorRed;
             case EButtonColor.BLUE:
-                return PlayerManager.ColorBlue;
+                return ColorBlue;
             case EButtonColor.GREEN:
-                return PlayerManager.ColorGreen;
+                return ColorGreen;
             case EButtonColor.YELLOW:
-                return PlayerManager.ColorYellow;
+                return ColorYellow;
         }
 
         throw new Exception("Wrong Input Color");
     }
 
-    public static void SetEndTimer(float endTimer) => Timer = endTimer;
+    public static void SetEndTimer(float endTimer)
+    {
+        Timer = endTimer;
+    }
+
+    [ContextMenu("Simulate end run (800)")]
+    public void testFunc()
+    {
+        SetEndTimer(800f);
+    }
 }
