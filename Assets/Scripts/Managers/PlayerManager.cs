@@ -103,7 +103,6 @@ public class PlayerManager : MonoBehaviour
                 playerInfo.SetPlayerID(i);
                 playerInfo.SetKeyColorDic();
             }
-
         }
     }
 
