@@ -51,12 +51,6 @@ public class BarrierScript : MonoBehaviour
         _instance._remainingWall = 2;
         _instance._wallInfos.ForEach(b => { b.Wall1.Item2 = EButtonColor.NONE; b.Wall2.Item2 = EButtonColor.NONE; });
 
-        List<Transform> targets = GetBarriereTargetPos(true);
-        for (int i = 0; i < BossController.Players.Count; i++)
-        {
-            BossController.Players[i].SetLaserTarget(targets[i]);
-        }
-
         List<int> playerWall = new List<int> { 0, 1, 2, 3 };
         playerWall.RemoveAt(Random.Range(0, 4));
 
@@ -79,6 +73,12 @@ public class BarrierScript : MonoBehaviour
             wall.transform.localRotation = Quaternion.Euler(0, 0, i * 90);
             _instance._wallInfos[i].Wall2.Item1 = wall.GetComponent<Image>();
             _instance._wallInfos[i].Wall2.Item3 = exist;
+        }
+
+        List<Transform> targets = GetBarriereTargetPos(true);
+        for (int i = 0; i < BossController.Players.Count; i++)
+        {
+            BossController.Players[i].SetLaserTarget(targets[i]);
         }
     }
 

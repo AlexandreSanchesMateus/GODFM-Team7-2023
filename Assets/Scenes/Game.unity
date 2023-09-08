@@ -1238,7 +1238,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e49eed2aef056404fb34a89ab7a69c2e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  players:
+  _players:
   - {fileID: 689311968}
   - {fileID: 1716879496}
   - {fileID: 1389735541}
@@ -3152,7 +3152,7 @@ Transform:
   - {fileID: 719819366}
   - {fileID: 495906888}
   m_Father: {fileID: 0}
-  m_RootOrder: 4
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1502992369
 GameObject:
@@ -3206,7 +3206,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1527399585
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3261,7 +3261,6 @@ MonoBehaviour:
     _colorVerticale: 3
     _keyVerticale: 258
   scores: []
-  Projectile: {fileID: 0}
 --- !u!4 &1527399586
 Transform:
   m_ObjectHideFlags: 0
@@ -3275,7 +3274,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 3
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1552917290
 GameObject:
@@ -3412,8 +3411,8 @@ RectTransform:
   m_GameObject: {fileID: 1641024547}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.9999887, y: 0.9999887, z: 0.9999887}
-  m_ConstrainProportionsScale: 0
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 1659613980}
   - {fileID: 1324475454}
@@ -3437,6 +3436,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bdef7b2db7093694c9a8bd996050ba7c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _outsideWallPrefab: {fileID: 0}
+  _neutralOutsideWallPrefab: {fileID: 0}
+  _insideWallPrefab: {fileID: 0}
+  _neutralInsideWallPrefab: {fileID: 0}
+  _wallInfos: []
   barrier1Imgs:
   - {fileID: 1848853667}
   - {fileID: 799186278}
@@ -4483,10 +4487,10 @@ MonoBehaviour:
   m_Type: 3
   m_PreserveAspect: 0
   m_FillCenter: 1
-  m_FillMethod: 1
+  m_FillMethod: 4
   m_FillAmount: 1
   m_FillClockwise: 1
-  m_FillOrigin: 1
+  m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
 --- !u!1 &2093604214
