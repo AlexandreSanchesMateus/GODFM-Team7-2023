@@ -34,7 +34,6 @@ public class ScoreHandler : MonoBehaviour
 
     private void Start()
     {
-        PlayerManager.SetEndTimer(600f);
         float endTimer = PlayerManager.Timer;
         
         List<float> scoresTemp = new(6);
