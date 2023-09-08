@@ -134,6 +134,7 @@ public class PlayerScript : MonoBehaviour
     {
         Projectil proj = Instantiate(_projectilPrefab, shootStart.position, Quaternion.identity, laserParent).GetComponent<Projectil>();
         proj.Target = _target;
+        proj.Parent = laserParent;
         proj.GetComponent<Image>().color = PlayerManager.GetInputColor(color);
     }
 

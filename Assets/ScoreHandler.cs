@@ -96,7 +96,7 @@ public class ScoreHandler : MonoBehaviour
         playerYourScoreText.color = _instance.playerScoreColor;
     }
 
-    public static void AddScore(float time, int rank, bool isPlayer = false)
+    private static void AddScore(float time, int rank, bool isPlayer = false)
     {
         TMP_Text scoreText = Instantiate(_instance.scorePrefab, _instance.scoreParent).GetComponent<TMP_Text>();
         scoreText.color = isPlayer ? _instance.playerScoreColor : _instance.otherScoreColor;
@@ -104,7 +104,8 @@ public class ScoreHandler : MonoBehaviour
         //scoreText.fontSize *= isPlayer ? 1.5f : 1f;
 
         scoreText.text = $"{rank}.  {FormatTime(time)}";
-        _instance.SetPlayerScore(time);
+        if (isPlayer)
+            _instance.SetPlayerScore(time);
     }
 
     private static string FormatTime(float time)
