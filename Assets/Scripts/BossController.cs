@@ -38,6 +38,8 @@ public class BossController : MonoBehaviour
     private float _timeInGame = 0.0001F;
 
     [Header("UI")]
+    [SerializeField] private AudioSource _hitSound;
+    [SerializeField] private AudioSource _deathSound;
     [SerializeField] private List<PlayerScript> _players;
     [SerializeField] private Image _imgHypnoLevel;
     [SerializeField] private TextMeshProUGUI _textTimer;
@@ -349,6 +351,8 @@ public class BossController : MonoBehaviour
         Instance._currentPV -= Instance._playerDamage;
         Instance._healthBar.UpdateHealthValue(Instance._currentPV);
 
+        Instance._hitSound.Play();
+
         // Death
         if (Instance._currentPV <= 0)
             Instance._currentState = EBossState.DEATH;
@@ -398,6 +402,7 @@ public class BossController : MonoBehaviour
 
     private IEnumerator LoadLeaderBoard()
     {
+        _deathSound.Play();
         yield return new WaitForSeconds(2);
         CustomSceneManager.LoadEndGame(true);
     }
