@@ -53,6 +53,9 @@ public class BossController : MonoBehaviour
     [SerializeField] private HealthBar _healthBar;
     [Header("Attack Phase")]
     [SerializeField] private float _delayBetweenAttack;
+
+    [SerializeField] private int numberOfDisks = 2;
+    private int diskPhase;
     [Header("Vulnerability phase")]
     [SerializeField] private float _vulnerabilityTime;
     private float _vulnerabilityTimer;
@@ -137,6 +140,7 @@ public class BossController : MonoBehaviour
         {
             // Disque of color
             case EBossState.ATTACK_DISQUE:
+                diskPhase = 0;
                 _bossAnimator.SetBool("Pendule", true);
                 _increaseHypnoLevel = true;
                 _players.ForEach(p =>
@@ -279,9 +283,18 @@ public class BossController : MonoBehaviour
 
         if (playedColor.Count == 0)
         {
-            // Animation
-            _currentState = EBossState.NONE;
-            StartCoroutine(DelayState(EBossState.VULNERABLE, 1f));
+            diskPhase++;
+            if (diskPhase == numberOfDisks)
+            {
+                // Animation
+                _currentState = EBossState.NONE;
+                StartCoroutine(DelayState(EBossState.VULNERABLE, 1f));
+            }
+            else
+            {
+                InitDisqueAttack();
+            }
+            
         }
         /*else
         {
