@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using DG.Tweening;
+using UnityEngine.UI;
 using Random = UnityEngine.Random;
 
 public class Projectil : MonoBehaviour
@@ -23,6 +24,7 @@ public class Projectil : MonoBehaviour
     public float minOffsetEx = -0.75f;
 
     [SerializeField] private GameObject explosionPrefab;
+    public Transform Parent;
 
     private void Start()
     {
@@ -70,7 +72,9 @@ public class Projectil : MonoBehaviour
     void DestroyProjectile()
     {
         // An explosion sprite was wandering around so I used it here, totally fine to use another one or remove it
-        Instantiate(explosionPrefab, transform.position + new Vector3(Random.Range(minOffsetEx, maxOffsetEx), Random.Range(minOffsetEx, maxOffsetEx), 0), Quaternion.identity);
+        Image img = Instantiate(explosionPrefab, transform.position + new Vector3(Random.Range(minOffsetEx, maxOffsetEx), 
+            Random.Range(minOffsetEx, maxOffsetEx), 0), Quaternion.identity, Parent).GetComponent<Image>();
+        img.color = GetComponent<Image>().color;
         BossController.DoShake();
         Destroy(gameObject);
     }

@@ -36,7 +36,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -11.7784, y: -106.866}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 1.6433, y: 1.468}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &5318953962137752774
@@ -96,4 +96,5 @@ MonoBehaviour:
   minOffset: 0.2
   maxOffsetEx: 0.75
   minOffsetEx: -0.75
-  explosionPrefab: {fileID: 1677906462881556306, guid: 4f72f7ca5830f874d9e49fdb257cfbac, type: 3}
+  explosionPrefab: {fileID: 7091630265864895091, guid: 4f72f7ca5830f874d9e49fdb257cfbac, type: 3}
+  Parent: {fileID: 0}
