@@ -21,16 +21,23 @@ public class HealthBar : MonoBehaviour
     public void InitializeHealthBar(int totalHealth)
     {
         _toalePV = totalHealth;
-        _sectionValue = totalHealth / _sections.Count;
+        _sectionValue = totalHealth / 10f;
 
         _sections.ForEach(sec => { sec.sprite = _normal; sec.color = _sectionColor; });
-        _currentSection = _sections.Count - 1;
+        _currentSection = 9;
     }
 
     public void UpdateHealthValue(float currentHealth)
     {
-        int sectionDamaged = (int)((_toalePV - currentHealth) / _sectionValue);
-        float pourcent = currentHealth % _sectionValue * 100 / _toalePV;
+        float percentCurrHealth = currentHealth / _toalePV; 
+        
+        int sectionDamaged = (int)(percentCurrHealth/10);
+        if (sectionDamaged == 10)
+        {
+            sectionDamaged = 9;
+        }
+
+        float pourcent = (percentCurrHealth - sectionDamaged * 10) * 10;
 
         // Remove last section
         if (sectionDamaged != _currentSection)
@@ -39,13 +46,13 @@ public class HealthBar : MonoBehaviour
             transform.DOKill();
             transform.DOShakePosition(0.15f);
             _sections[_currentSection].sprite = _destroy;
-            _sections[_currentSection].color = _sectionColor;
+            // _sections[_currentSection].color = _sectionColor;
             _sections.RemoveAt(_currentSection);
             _currentSection = sectionDamaged;
         }
 
-        if(_pulseRoutine == null)
-            _pulseRoutine = StartCoroutine(Pulse());
+        // if (_pulseRoutine == null)
+        //     _pulseRoutine = StartCoroutine(Pulse());
 
         if (pourcent < 50)
             _sections[sectionDamaged].sprite = _damaged;
