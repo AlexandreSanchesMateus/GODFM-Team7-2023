@@ -58,7 +58,20 @@ public class BarrierScript : MonoBehaviour
         {
             bool exist = playerWall.Exists(p => p == i);
             GameObject wall = Instantiate<GameObject>( exist ? _instance._outsideWallPrefab : _instance._neutralOutsideWallPrefab, _instance.gameObject.transform);
-            wall.transform.localRotation = Quaternion.Euler(0, 0, i * 90);
+
+            switch (i)
+            {
+                case 1:
+                    wall.transform.localRotation = Quaternion.Euler(180, 0, 0);
+                    break;
+                case 2:
+                    wall.transform.localRotation = Quaternion.Euler(180, 180, 0);
+                    break;
+                case 3:
+                    wall.transform.localRotation = Quaternion.Euler(0, 180, 0);
+                    break;
+            }
+
             _instance._wallInfos[i].Wall1.Item1 = wall.GetComponent<Image>();
             _instance._wallInfos[i].Wall1.Item3 = exist;
         }
@@ -70,7 +83,20 @@ public class BarrierScript : MonoBehaviour
         {
             bool exist = playerWall.Exists(p => p == i);
             GameObject wall = Instantiate<GameObject>(exist ? _instance._insideWallPrefab : _instance._neutralInsideWallPrefab, _instance.gameObject.transform);
-            wall.transform.localRotation = Quaternion.Euler(0, 0, i * 90);
+            
+            switch (i)
+            {
+                case 1:
+                    wall.transform.localRotation = Quaternion.Euler(180, 0, 0);
+                    break;
+                case 2:
+                    wall.transform.localRotation = Quaternion.Euler(180, 180, 0);
+                    break;
+                case 3:
+                    wall.transform.localRotation = Quaternion.Euler(0, 180, 0);
+                    break;
+            }
+
             _instance._wallInfos[i].Wall2.Item1 = wall.GetComponent<Image>();
             _instance._wallInfos[i].Wall2.Item3 = exist;
         }
@@ -125,8 +151,10 @@ public class BarrierScript : MonoBehaviour
 
             if (allHit)
             {
+                _instance.StartCoroutine(_instance.WaitBeamAction(true, breakDisque));
+
                 // Reinitialisation
-                _instance.ReinitialiseWall(true);
+                /*_instance.ReinitialiseWall(true);
 
                 if (breakDisque)
                 {
@@ -137,7 +165,7 @@ public class BarrierScript : MonoBehaviour
                     {
                         BossController.Players[i].SetLaserTarget(targets[i]);
                     }
-                }
+                }*/
             }
         }
         else
@@ -172,7 +200,10 @@ public class BarrierScript : MonoBehaviour
 
             if (allHit)
             {
-                _instance.ReinitialiseWall(false);
+                _instance.StartCoroutine(_instance.WaitBeamAction(false, breakDisque));
+
+                // Reinitialisation
+                /*_instance.ReinitialiseWall(false);
 
                 if (breakDisque)
                 {
@@ -180,7 +211,7 @@ public class BarrierScript : MonoBehaviour
 
                     // Exit Mode
                     BossController.QuitPsychoPhase();
-                }
+                }*/
             }
         }
     }
@@ -204,6 +235,43 @@ public class BarrierScript : MonoBehaviour
                 Wall.Wall2.Item2 = EButtonColor.NONE;
             }
         });
+    }
+
+    private IEnumerator WaitBeamAction(bool outsideWall, bool breaking)
+    {
+        BossController.Players.ForEach(p => p.SetActivePlayer(false));
+        yield return new WaitForSeconds(0.4f);
+
+        if (outsideWall)
+        {
+            _instance.ReinitialiseWall(true);
+
+            if (breaking)
+            {
+                _instance._wallInfos.ForEach(wall => Destroy(wall.Wall1.Item1.gameObject));
+
+                List<Transform> targets = GetBarriereTargetPos(false);
+                for (int i = 0; i < BossController.Players.Count; i++)
+                {
+                    BossController.Players[i].SetLaserTarget(targets[i]);
+                }
+            }
+        }
+        else
+        {
+            // Reinitialisation
+            _instance.ReinitialiseWall(false);
+
+            if (breaking)
+            {
+                _instance._wallInfos.ForEach(wall => Destroy(wall.Wall2.Item1.gameObject));
+
+                // Exit Mode
+                BossController.QuitPsychoPhase();
+            }
+        }
+
+        BossController.Players.ForEach(p => p.SetActivePlayer(true));
     }
 
     // ---------------------- Last Version ------------------------- //

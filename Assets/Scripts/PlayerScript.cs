@@ -50,6 +50,12 @@ public class PlayerScript : MonoBehaviour
     public void SetActivePlayer(bool state)
     {
         isActive = state;
+
+        if (state)
+        {
+            _coolDown = false;
+            _shotTimer = 0;
+        }
     }
 
     private bool isActive { get; set; }
@@ -61,7 +67,7 @@ public class PlayerScript : MonoBehaviour
         if (_coolDown)
         {
             _shotTimer += Time.deltaTime;
-            if(_shotTimer >= _timeBetweenShots)
+            if (_shotTimer >= _timeBetweenShots)
             {
                 _coolDown = false;
                 _shotTimer = 0;
@@ -71,18 +77,19 @@ public class PlayerScript : MonoBehaviour
                 return;
             }
         }
-
-        foreach(KeyValuePair<KeyCode, EButtonColor> keyValue in _info.KeyColorDic)
+        else
         {
-            if (Input.GetKeyDown(keyValue.Key))
+            foreach (KeyValuePair<KeyCode, EButtonColor> keyValue in _info.KeyColorDic)
             {
-                ProcessInput(true, keyValue.Value);
-                _coolDown = true;
+                if (Input.GetKeyDown(keyValue.Key))
+                {
+                    ProcessInput(true, keyValue.Value);
+                    _coolDown = true;
+                }
+                else if (Input.GetKeyUp(keyValue.Key))
+                    ProcessInput(false, keyValue.Value);
             }
-            else if (Input.GetKeyUp(keyValue.Key))
-                ProcessInput(false, keyValue.Value);
         }
-        
     }
 
     private void ProcessInput(bool isPressed, EButtonColor color)
@@ -107,7 +114,9 @@ public class PlayerScript : MonoBehaviour
                         _beam.DOColor(PlayerManager.GetInputColor(color), 0.4f);
                     }
                     else
+                    {
                         InstanciateBeam(color);
+                    }
 
                     BarrierScript.OnBeamHitWall(_info.ID, color, _beam);
                 }
@@ -158,8 +167,9 @@ public class PlayerScript : MonoBehaviour
 
     private IEnumerator BeamFade()
     {
-        yield return new WaitForSeconds(_timeBetweenShots*0.9f);
-        Destroy(_beam.gameObject);
+        yield return new WaitForSeconds(1f);
         BossController.OnPlayerInput(_info.ID, EButtonColor.NONE);
+        yield return null;
+        Destroy(_beam.gameObject);
     }
 }

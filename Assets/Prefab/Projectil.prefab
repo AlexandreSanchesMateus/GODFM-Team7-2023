@@ -67,7 +67,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: a8ce9c95618b6614fa19df8aa2afd93d, type: 3}
+  m_Sprite: {fileID: 1898921514, guid: e2e92484aa1cba3458a636b7279a02d7, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -91,6 +91,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Target: {fileID: 0}
   MoveSpeed: 1
-  maxOffset: 3
   duration: 0.4
+  maxOffset: 3
+  minOffset: 0.2
+  maxOffsetEx: 0.75
+  minOffsetEx: -0.75
   explosionPrefab: {fileID: 1677906462881556306, guid: 4f72f7ca5830f874d9e49fdb257cfbac, type: 3}
