@@ -95,7 +95,8 @@ public class BarrierScript : MonoBehaviour
 
         if (_instance._remainingWall == 2)
         {
-            _instance._wallInfos[playerID].Wall1.Item1.color = PlayerManager.GetInputColor(color);
+            _instance._wallInfos[playerID].Wall1.Item1.DOKill();
+            _instance._wallInfos[playerID].Wall1.Item1.DOColor(PlayerManager.GetInputColor(color), 0.3f);
             _instance._wallInfos[playerID].Wall1.Item2 = color;
 
             _instance._wallInfos.ForEach(wall =>
@@ -115,11 +116,34 @@ public class BarrierScript : MonoBehaviour
                         breakDisque = false;
                     }
                 }
+                else
+                {
+                    allHit = true;
+                    breakDisque = false;
+                }
             });
+
+            if (allHit)
+            {
+                // Reinitialisation
+                _instance.ReinitialiseWall(true);
+
+                if (breakDisque)
+                {
+                    _instance._wallInfos.ForEach(wall => Destroy(wall.Wall1.Item1.gameObject));
+
+                    List<Transform> targets = GetBarriereTargetPos(false);
+                    for (int i = 0; i < BossController.Players.Count; i++)
+                    {
+                        BossController.Players[i].SetLaserTarget(targets[i]);
+                    }
+                }
+            }
         }
         else
         {
-            _instance._wallInfos[playerID].Wall2.Item1.color = PlayerManager.GetInputColor(color);
+            _instance._wallInfos[playerID].Wall2.Item1.DOKill();
+            _instance._wallInfos[playerID].Wall2.Item1.DOColor(PlayerManager.GetInputColor(color), 0.3f);
             _instance._wallInfos[playerID].Wall2.Item2 = color;
 
             _instance._wallInfos.ForEach(wall =>
@@ -139,47 +163,47 @@ public class BarrierScript : MonoBehaviour
                         breakDisque = false;
                     }
                 }
+                else
+                {
+                    allHit = true;
+                    breakDisque = false;
+                }
             });
 
             if (allHit)
             {
+                _instance.ReinitialiseWall(false);
+
                 if (breakDisque)
                 {
-                    if(--_instance._remainingWall == 0)
-                    {
-                        // Exit Mode
-                        BossController.QuitPsychoPhase();
-                    }
-                    else
-                    {
-                        List<Transform> targets = GetBarriereTargetPos(false);
-                        for (int i = 0; i < BossController.Players.Count; i++)
-                        {
-                            BossController.Players[i].SetLaserTarget(targets[i]);
-                        }
-                    }
-                }
-                else
-                {
-                    // Reinitialisation
-                    _instance._wallInfos.ForEach(Wall =>
-                    {
-                        Wall.BeamsHit.ForEach(beam => Destroy(beam.gameObject));
+                    _instance._wallInfos.ForEach(wall => Destroy(wall.Wall2.Item1.gameObject));
 
-                        if (_instance._remainingWall == 2)
-                        {
-                            Wall.Wall1.Item1.DOColor(Color.white, 0.2f);
-                            Wall.Wall1.Item2 = EButtonColor.NONE;
-                        }
-                        else
-                        {
-                            Wall.Wall2.Item1.DOColor(Color.white, 0.2f);
-                            Wall.Wall2.Item2 = EButtonColor.NONE;
-                        }
-                    });
+                    // Exit Mode
+                    BossController.QuitPsychoPhase();
                 }
             }
         }
+    }
+
+    private void ReinitialiseWall(bool outsidWall)
+    {
+        _instance._wallInfos.ForEach(Wall =>
+        {
+            Wall.BeamsHit.ForEach(beam => Destroy(beam.gameObject));
+
+            if (outsidWall)
+            {
+                Wall.Wall1.Item1.DOKill();
+                Wall.Wall1.Item1.DOColor(Color.white, 0.2f);
+                Wall.Wall1.Item2 = EButtonColor.NONE;
+            }
+            else
+            {
+                Wall.Wall2.Item1.DOKill();
+                Wall.Wall2.Item1.DOColor(Color.white, 0.2f);
+                Wall.Wall2.Item2 = EButtonColor.NONE;
+            }
+        });
     }
 
     // ---------------------- Last Version ------------------------- //
