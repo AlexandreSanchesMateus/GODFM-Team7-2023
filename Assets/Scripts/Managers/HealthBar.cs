@@ -29,19 +29,22 @@ public class HealthBar : MonoBehaviour
 
     public void UpdateHealthValue(float currentHealth)
     {
-        float percentCurrHealth = currentHealth / _toalePV; 
+        float percentCurrHealth = currentHealth / _toalePV * 100; 
         
         int sectionDamaged = (int)(percentCurrHealth/10);
         if (sectionDamaged == 10)
         {
             sectionDamaged = 9;
         }
+        
+        Debug.Log($"Current HEatlth {percentCurrHealth}%");
 
         float pourcent = (percentCurrHealth - sectionDamaged * 10) * 10;
 
         // Remove last section
         if (sectionDamaged != _currentSection)
         {
+            Debug.Log("Changing Section");
             StopAllCoroutines();
             transform.DOKill();
             transform.DOShakePosition(0.15f);

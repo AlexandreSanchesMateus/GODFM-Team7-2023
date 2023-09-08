@@ -1259,7 +1259,7 @@ MonoBehaviour:
   _activationTime: 4.5
   _maxHypnoLevel: 30
   _hypnoLevelSpeed: 1
-  _maxPv: 100
+  _maxPv: 200
   _playerDamage: 1
   _healthBar: {fileID: 1552917292}
   _delayBetweenAttack: 1.4
