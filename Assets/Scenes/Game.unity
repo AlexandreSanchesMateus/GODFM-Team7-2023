@@ -1259,11 +1259,11 @@ MonoBehaviour:
   _activationTime: 4.5
   _maxHypnoLevel: 30
   _hypnoLevelSpeed: 1
-  _maxPv: 200
+  _maxPv: 100
   _playerDamage: 1
   _healthBar: {fileID: 1552917292}
   _delayBetweenAttack: 1.4
-  _vulnerabilityTime: 5
+  _vulnerabilityTime: 7
   diskShotCooldown: 1
   hypnoShotCooldown: 0.1
   vulnShotCooldown: 0.1

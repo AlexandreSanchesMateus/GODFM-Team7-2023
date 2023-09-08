@@ -27,7 +27,7 @@ public class BossController : MonoBehaviour
 
     // Attack
     private List<EButtonColor> currentPlayersInput;
-    EButtonColor[] colorSelected = new EButtonColor[4];
+    List<EButtonColor> colorSelected = new List<EButtonColor>() { EButtonColor.NONE, EButtonColor.NONE, EButtonColor.NONE, EButtonColor.NONE };
 
     private float _currentPV;
 
@@ -120,6 +120,7 @@ public class BossController : MonoBehaviour
             _vulnerabilityTimer += Time.deltaTime;
             if (_vulnerabilityTimer >= _vulnerabilityTime)
             {
+                _vulnerabilityTimer = 0;
                 _currentState = EBossState.NONE;
                 StartCoroutine(DelayState(EBossState.ATTACK_DISQUE, 1f));
             }
@@ -170,7 +171,6 @@ public class BossController : MonoBehaviour
                 });
                 _bossEyes.ForEach(img => img.color = Color.white);
                 _increaseHypnoLevel = false;
-                _vulnerabilityTimer = 0;
                 break;
 
             // Boss Dead
@@ -246,7 +246,7 @@ public class BossController : MonoBehaviour
     {
         currentPlayersInput.ForEach(input => input = EButtonColor.NONE);
 
-        EButtonColor[] colorSelected = new EButtonColor[4];
+        colorSelected = new List<EButtonColor>() { EButtonColor.NONE, EButtonColor.NONE, EButtonColor.NONE, EButtonColor.NONE };
         List<EButtonColor> colorPossible = new List<EButtonColor>{
             EButtonColor.BLUE, EButtonColor.BLUE,
             EButtonColor.GREEN, EButtonColor.GREEN,
@@ -271,22 +271,22 @@ public class BossController : MonoBehaviour
             if (color == EButtonColor.NONE)
                 return;
 
-            if(playedColor.Exists(p => p == color))
+            if (playedColor.Exists(p => p == color))
                 playedColor.Remove(color);
         }
-        
+
         if (playedColor.Count == 0)
         {
             // Animation
             _currentState = EBossState.NONE;
             StartCoroutine(DelayState(EBossState.VULNERABLE, 1f));
         }
-        else
+        /*else
         {
             // Animation Block
             // Réinitialisation
             InitDisqueAttack();
-        }
+        }*/
     }
     
     private void InitHypnoAttack()

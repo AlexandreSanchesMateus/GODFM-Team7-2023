@@ -251,6 +251,7 @@ public class BarrierScript : MonoBehaviour
             if (breaking)
             {
                 _instance._wallInfos.ForEach(wall => Destroy(wall.Wall1.Item1.gameObject));
+                _instance._remainingWall--;
 
                 List<Transform> targets = GetBarriereTargetPos(false);
                 for (int i = 0; i < BossController.Players.Count; i++)
