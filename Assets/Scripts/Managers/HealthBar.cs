@@ -30,6 +30,8 @@ public class HealthBar : MonoBehaviour
     public void UpdateHealthValue(float currentHealth)
     {
         int sectionDamaged = (int)((_toalePV - currentHealth) / _sectionValue);
+
+
         float pourcent = currentHealth % _sectionValue * 100 / _toalePV;
 
         // Remove last section
