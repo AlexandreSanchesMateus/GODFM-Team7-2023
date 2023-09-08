@@ -94,7 +94,7 @@ MonoBehaviour:
   duration: 0.4
   maxOffset: 3
   minOffset: 0.2
-  maxOffsetEx: 0.75
-  minOffsetEx: -0.75
+  maxOffsetEx: 1.2
+  minOffsetEx: -1.2
   explosionPrefab: {fileID: 7091630265864895091, guid: 4f72f7ca5830f874d9e49fdb257cfbac, type: 3}
   Parent: {fileID: 0}
