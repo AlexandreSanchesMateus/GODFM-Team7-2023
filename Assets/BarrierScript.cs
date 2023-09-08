@@ -20,9 +20,9 @@ public class BarrierScript : MonoBehaviour
         public Transform PosWall1;
         public Transform PosWall2;
 
-        [HideInInspector] public (Image, EButtonColor, bool) Wall1;
-        [HideInInspector] public (Image, EButtonColor, bool) Wall2;
-        [HideInInspector] public List<Image> BeamsHit = new List<Image>();
+        [HideInInspector] public (GameObject, EButtonColor, bool) Wall1;
+        [HideInInspector] public (GameObject, EButtonColor, bool) Wall2;
+        [HideInInspector] public List<GameObject> BeamsHit = new List<GameObject>();
     }
 
     [SerializeField] private GameObject _outsideWallPrefab;
@@ -72,7 +72,7 @@ public class BarrierScript : MonoBehaviour
                     break;
             }
 
-            _instance._wallInfos[i].Wall1.Item1 = wall.GetComponent<Image>();
+            _instance._wallInfos[i].Wall1.Item1 = wall.gameObject;
             _instance._wallInfos[i].Wall1.Item3 = exist;
         }
 
@@ -97,7 +97,7 @@ public class BarrierScript : MonoBehaviour
                     break;
             }
 
-            _instance._wallInfos[i].Wall2.Item1 = wall.GetComponent<Image>();
+            _instance._wallInfos[i].Wall2.Item1 = wall.gameObject;
             _instance._wallInfos[i].Wall2.Item3 = exist;
         }
 
@@ -108,7 +108,7 @@ public class BarrierScript : MonoBehaviour
         }
     }
 
-    public static void OnBeamHitWall(int playerID, EButtonColor color, Image Beam)
+    public static void OnBeamHitWall(int playerID, EButtonColor color, GameObject Beam)
     {
         if (_instance._remainingWall == 0) return;
 
@@ -121,11 +121,11 @@ public class BarrierScript : MonoBehaviour
 
         if (_instance._remainingWall == 2)
         {
-            _instance._wallInfos[playerID].Wall1.Item1.DOKill();
-            _instance._wallInfos[playerID].Wall1.Item1.DOColor(PlayerManager.GetInputColor(color), 0.3f);
+            _instance._wallInfos[playerID].Wall1.Item1.GetComponent<Image>().DOKill();
+            _instance._wallInfos[playerID].Wall1.Item1.GetComponent<Image>().DOColor(PlayerManager.GetInputColor(color), 0.3f);
             _instance._wallInfos[playerID].Wall1.Item2 = color;
 
-            _instance._wallInfos.ForEach(wall =>
+            foreach (WallInfo wall in _instance._wallInfos)
             {
                 if (wall.Wall1.Item3)
                 {
@@ -142,12 +142,13 @@ public class BarrierScript : MonoBehaviour
                         breakDisque = false;
                     }
                 }
-                else
+                else if(wall.Wall1.Item2 != EButtonColor.NONE)
                 {
                     allHit = true;
                     breakDisque = false;
+                    break;
                 }
-            });
+            }
 
             if (allHit)
             {
@@ -170,11 +171,11 @@ public class BarrierScript : MonoBehaviour
         }
         else
         {
-            _instance._wallInfos[playerID].Wall2.Item1.DOKill();
-            _instance._wallInfos[playerID].Wall2.Item1.DOColor(PlayerManager.GetInputColor(color), 0.3f);
+            _instance._wallInfos[playerID].Wall2.Item1.GetComponent<Image>().DOKill();
+            _instance._wallInfos[playerID].Wall2.Item1.GetComponent<Image>().DOColor(PlayerManager.GetInputColor(color), 0.3f);
             _instance._wallInfos[playerID].Wall2.Item2 = color;
 
-            _instance._wallInfos.ForEach(wall =>
+            foreach(WallInfo wall in _instance._wallInfos)
             {
                 if (wall.Wall2.Item3)
                 {
@@ -191,12 +192,13 @@ public class BarrierScript : MonoBehaviour
                         breakDisque = false;
                     }
                 }
-                else
+                else if (wall.Wall2.Item2 != EButtonColor.NONE)
                 {
                     allHit = true;
                     breakDisque = false;
+                    break;
                 }
-            });
+            }
 
             if (allHit)
             {
@@ -224,14 +226,14 @@ public class BarrierScript : MonoBehaviour
 
             if (outsidWall)
             {
-                Wall.Wall1.Item1.DOKill();
-                Wall.Wall1.Item1.DOColor(Color.white, 0.2f);
+                Wall.Wall1.Item1.GetComponent<Image>().DOKill();
+                Wall.Wall1.Item1.GetComponent<Image>().DOColor(Color.white, 0.2f);
                 Wall.Wall1.Item2 = EButtonColor.NONE;
             }
             else
             {
-                Wall.Wall2.Item1.DOKill();
-                Wall.Wall2.Item1.DOColor(Color.white, 0.2f);
+                Wall.Wall2.Item1.GetComponent<Image>().DOKill();
+                Wall.Wall2.Item1.GetComponent<Image>().DOColor(Color.white, 0.2f);
                 Wall.Wall2.Item2 = EButtonColor.NONE;
             }
         });

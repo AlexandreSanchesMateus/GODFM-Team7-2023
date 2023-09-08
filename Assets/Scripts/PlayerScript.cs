@@ -19,22 +19,20 @@ public class PlayerScript : MonoBehaviour
     [FormerlySerializedAs("laserTarget")] [SerializeField] private Transform target;
 
     private bool _coolDown = false;
-    private float _timeBetweenShots = 0;
+    private float _timeBetweenShots = 1.4f;
     private float _shotTimer;
 
-    private Image _beam;
+    private GameObject _beam;
 
 
     public void InitPlayer(PlayerManager.PlayerInfo info)
     {
         _info = info;
-        _shotTimer = Mathf.Infinity;
     }
 
     public void ChangeAttackParameters(float shotCooldown)
     {
         _timeBetweenShots = shotCooldown;
-        _shotTimer = _timeBetweenShots;
     }
 
     public void SetLaserTarget(List<Transform> transforms)
@@ -99,9 +97,8 @@ public class PlayerScript : MonoBehaviour
             case BossController.EBossState.ATTACK_DISQUE:
                 if (isPressed)
                 {
-                    InstanciateBeam(color);
+                    InstanciateBeam(color).GetComponent<Laser>().SetLazer(_timeBetweenShots * 0.8f, _info.ID);
                     BossController.OnPlayerInput(_info.ID, color);
-                    StartCoroutine(BeamFade());
                 }
                 break;
             
@@ -110,8 +107,8 @@ public class PlayerScript : MonoBehaviour
                 {
                     if (_beam != null)
                     {
-                        _beam.DOKill();
-                        _beam.DOColor(PlayerManager.GetInputColor(color), 0.4f);
+                        _beam.GetComponent<Image>().DOKill();
+                        _beam.GetComponent<Image>().DOColor(PlayerManager.GetInputColor(color), 0.4f);
                     }
                     else
                     {
@@ -140,7 +137,7 @@ public class PlayerScript : MonoBehaviour
         proj.GetComponent<Image>().color = PlayerManager.GetInputColor(color);
     }
 
-    private void InstanciateBeam(EButtonColor inputColor)
+    private GameObject InstanciateBeam(EButtonColor inputColor)
     {
         Color32 color = PlayerManager.GetInputColor(inputColor);
 
@@ -157,19 +154,27 @@ public class PlayerScript : MonoBehaviour
 
         Quaternion angle = Quaternion.AngleAxis(Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg, Vector3.forward);
 
-        _beam = Instantiate(_beamPrefab, startPos, angle, laserParent).GetComponent<Image>();
-        _beam.color = color;
+        _beam = Instantiate(_beamPrefab, startPos, angle, laserParent);
+        _beam.GetComponent<Image>() .color = color;
         RectTransform rect = _beam.GetComponent<RectTransform>();
         // distance = (int)((distance - 624) / 160) * 160 + 624;
         //distance = (int)((distance - 39) / 10) * 10 + 39;
         rect.sizeDelta = new Vector2(distance, rect.sizeDelta.y);
+        return _beam;
     }
 
     private IEnumerator BeamFade()
     {
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSeconds(_timeBetweenShots * 0.8f);
         BossController.OnPlayerInput(_info.ID, EButtonColor.NONE);
         yield return null;
-        Destroy(_beam.gameObject);
+        Destroy(_beam);
+        _beam = null;
+    }
+
+    public void DestroyBeamInstant()
+    {
+        Destroy(_beam);
+        _beam = null;
     }
 }

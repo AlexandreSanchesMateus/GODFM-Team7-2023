@@ -802,7 +802,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1316673881
 Transform:
   m_ObjectHideFlags: 0
@@ -929,19 +929,28 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e49eed2aef056404fb34a89ab7a69c2e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _players: []
   _imgHypnoLevel: {fileID: 0}
   _textTimer: {fileID: 0}
+  _backgroundAnimator: {fileID: 0}
   _bossEyes:
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
+  _bossEyesTransform: []
+  _activationTime: 0
   _maxHypnoLevel: 30
   _hypnoLevelSpeed: 1
   _maxPv: 100
+  _playerDamage: 0
   _healthBar: {fileID: 0}
   _delayBetweenAttack: 1.4
   _vulnerabilityTime: 5
+  diskShotCooldown: 1
+  hypnoShotCooldown: 0.1
+  vulnShotCooldown: 0.1
+  bossBody: {fileID: 0}
 --- !u!114 &2038035157
 MonoBehaviour:
   m_ObjectHideFlags: 0

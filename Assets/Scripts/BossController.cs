@@ -150,7 +150,8 @@ public class BossController : MonoBehaviour
                 _bossEyes.ForEach(img => img.color = Color.white);
                 _players.ForEach(p =>
                 {
-                    p.ChangeAttackParameters(hypnoShotCooldown); 
+                    p.DestroyBeamInstant();
+                    p.ChangeAttackParameters(hypnoShotCooldown);
                     // p.SetLaserTarget(_bossEyesTransform); 
                 });
                 _backgroundAnimator.SetBool("Psycho", true);
@@ -214,7 +215,7 @@ public class BossController : MonoBehaviour
                 break;
 
             case EBossState.HYPNOTIC_PHASE:
-                Instance.CheckHypnoEnd();
+                // Instance.CheckHypnoEnd();
                 break;
 
             case EBossState.VULNERABLE:
