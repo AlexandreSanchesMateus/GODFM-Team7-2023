@@ -30,6 +30,7 @@ public class BarrierScript : MonoBehaviour
     [SerializeField] private GameObject _insideWallPrefab;
     [SerializeField] private GameObject _neutralInsideWallPrefab;
     [SerializeField] private List<WallInfo> _wallInfos;
+    [SerializeField] private AudioSource _errorSound;
 
     int _remainingWall;
 
@@ -259,6 +260,10 @@ public class BarrierScript : MonoBehaviour
                     BossController.Players[i].SetLaserTarget(targets[i]);
                 }
             }
+            else
+            {
+                _errorSound.Play();
+            }
         }
         else
         {
@@ -271,6 +276,10 @@ public class BarrierScript : MonoBehaviour
 
                 // Exit Mode
                 BossController.QuitPsychoPhase();
+            }
+            else
+            {
+                _errorSound.Play();
             }
         }
 
