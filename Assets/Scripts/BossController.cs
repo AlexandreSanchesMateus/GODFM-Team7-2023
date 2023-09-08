@@ -90,6 +90,8 @@ public class BossController : MonoBehaviour
         _healthBar.InitializeHealthBar(_maxPv);
         _currentState = EBossState.NONE;
 
+        _currentPV = _maxPv;
+
         Invoke(nameof(OnInitializationEnd), _activationTime);
     }
 
