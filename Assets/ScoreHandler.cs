@@ -20,6 +20,11 @@ public class ScoreHandler : MonoBehaviour
     private int sizeMultiplier = 5;
     private float baseFontSize;
 
+    public float MaxTimeOnScreen = 10f;
+    private float ScreenTimer;
+
+    [SerializeField] private Image pendulumFill;
+
 
     private void Awake()
     {
@@ -66,6 +71,12 @@ public class ScoreHandler : MonoBehaviour
 
     private void FixedUpdate()
     {
+        ScreenTimer += Time.fixedDeltaTime;
+        pendulumFill.fillAmount = ScreenTimer / MaxTimeOnScreen;
+        if (ScreenTimer >= MaxTimeOnScreen)
+        {
+            CustomSceneManager.LoadMainMenu(true);
+        }
         if (playerScoreboardText == null) return;
 
         if (playerScoreboardText.fontSize >= 1.5f*baseFontSize)
@@ -80,10 +91,10 @@ public class ScoreHandler : MonoBehaviour
         playerScoreboardText.fontSize += sizeIncrement * sizeMultiplier;
     }
 
-    public static void SetPlayerScore(float time)
+    private void SetPlayerScore(float time)
     {
-        _instance.playerYourScoreText.text = $"Your Score: {FormatTime(time)}";
-        _instance.playerYourScoreText.color = _instance.playerScoreColor;
+        playerYourScoreText.text = $"Your Score: {FormatTime(time)}";
+        playerYourScoreText.color = _instance.playerScoreColor;
     }
 
     public static void AddScore(float time, int rank, bool isPlayer = false)
@@ -94,6 +105,7 @@ public class ScoreHandler : MonoBehaviour
         //scoreText.fontSize *= isPlayer ? 1.5f : 1f;
 
         scoreText.text = $"{rank}.  {FormatTime(time)}";
+        _instance.SetPlayerScore(time);
     }
 
     private static string FormatTime(float time)
