@@ -13,6 +13,8 @@ public class ButtonDisplay : MonoBehaviour
 
     [SerializeField] private List<Image> images;
     [SerializeField] private Image fill;
+    [SerializeField] private AudioSource _holdSound;
+    [SerializeField] private AudioSource _confirmSound;
 
     private bool _init = false;
     private Animator _buttonsAnimator;
@@ -123,6 +125,7 @@ public class ButtonDisplay : MonoBehaviour
             {
                 fill.DOKill();
                 fill.DOFillAmount(0, 0.2f).SetEase(Ease.Linear);
+                _holdSound.Stop();
                 StopAllCoroutines();
             }
         }
@@ -130,9 +133,13 @@ public class ButtonDisplay : MonoBehaviour
 
     private IEnumerator HoldButtons()
     {
+        _holdSound.Play();
         yield return new WaitForSeconds(2f);
         isReady = true;
         _manager.CheckAllPlayersReady();
+        _holdSound.Stop();
+        yield return new WaitForSeconds(0.1f);
+        _confirmSound.Play();
     }
 
     private IEnumerator NotReadyDelai()
