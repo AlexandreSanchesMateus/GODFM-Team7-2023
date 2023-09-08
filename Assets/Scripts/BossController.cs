@@ -10,6 +10,7 @@ public class BossController : MonoBehaviour
 {
     private static BossController Instance;
     public static EBossState CurrentState => Instance._currentState;
+    public static List<PlayerScript> Players => Instance._players;
 
     public enum EBossState
     {
@@ -37,7 +38,7 @@ public class BossController : MonoBehaviour
     private float _timeInGame = 0.0001F;
 
     [Header("UI")]
-    [SerializeField] private List<PlayerScript> players;
+    [SerializeField] private List<PlayerScript> _players;
     [SerializeField] private Image _imgHypnoLevel;
     [SerializeField] private TextMeshProUGUI _textTimer;
     [SerializeField] private Animator _backgroundAnimator;
@@ -82,7 +83,7 @@ public class BossController : MonoBehaviour
 
         for (int i = 0; i < PlayerManager.PlayerInfos.Count; i++)
         {
-            players[i].InitPlayer(PlayerManager.PlayerInfos[i]);
+            _players[i].InitPlayer(PlayerManager.PlayerInfos[i]);
         }
 
         currentPlayersInput = new List<EButtonColor>{ EButtonColor.NONE, EButtonColor.NONE, EButtonColor.NONE, EButtonColor.NONE };
@@ -135,7 +136,7 @@ public class BossController : MonoBehaviour
             case EBossState.ATTACK_DISQUE:
                 _bossAnimator.SetBool("Pendule", true);
                 _increaseHypnoLevel = true;
-                players.ForEach(p =>
+                _players.ForEach(p =>
                 {
                     p.ChangeAttackParameters(diskShotCooldown); 
                     p.SetLaserTarget(_bossEyesTransform); 
@@ -145,22 +146,23 @@ public class BossController : MonoBehaviour
 
             // Minigame when the level of hypnose is at its maximum
             case EBossState.HYPNOTIC_PHASE:
-                // TODO: Maybe disable completely the eyes?                
+                // TODO: Maybe disable completely the eyes?
                 _bossEyes.ForEach(img => img.color = Color.white);
-                players.ForEach(p =>
+                _players.ForEach(p =>
                 {
                     p.ChangeAttackParameters(hypnoShotCooldown); 
-                    p.SetLaserTarget(_bossEyesTransform); 
+                    // p.SetLaserTarget(_bossEyesTransform); 
                 });
                 _backgroundAnimator.SetBool("Psycho", true);
                 _bossAnimator.SetBool("Pendule", false);
                 _increaseHypnoLevel = false;
-                InitHypnoAttack();
+                BarrierScript.InitBarrierVisuals();
+                // InitHypnoAttack();
                 break;
 
             // Players can damage the boss
             case EBossState.VULNERABLE:
-                players.ForEach(p =>
+                _players.ForEach(p =>
                 {
                     p.ChangeAttackParameters(vulnShotCooldown); 
                     p.SetLaserTarget(gameObject.transform); 
@@ -178,7 +180,8 @@ public class BossController : MonoBehaviour
                 _timeElapse = false;
                 _bossAnimator.SetBool("Pendule", false);
                 PlayerManager.SetEndTimer(_timeInGame);
-                players.ForEach(p => p.SetActivePlayer(false));
+                _players.ForEach(p => p.SetActivePlayer(false));
+                StartCoroutine(LoadLeaderBoard());
                 break;
         }
 
@@ -186,14 +189,12 @@ public class BossController : MonoBehaviour
         _bossAnimator.SetInteger("State", (int)_currentState);
     }
 
-    
-
     #region Animation Related
     public void OnInitializationEnd()
     {
         _timeElapse = true;
         _currentState = EBossState.ATTACK_DISQUE;
-        players.ForEach(p => p.SetActivePlayer(true));
+        _players.ForEach(p => p.SetActivePlayer(true));
         _bossAnimator.SetBool("Pendule", true);
     }
 
@@ -292,7 +293,7 @@ public class BossController : MonoBehaviour
         barrierLevel = 0;
         barriers = new List<Barrier>(2) { new(), new() };
         BarrierScript.InitBarrierVisuals(barriers);
-        players.ForEach(p =>
+        _players.ForEach(p =>
         {
             p.SetLaserTarget(BarrierScript.GetPointsTransforms(barrierLevel));
         });
@@ -321,7 +322,7 @@ public class BossController : MonoBehaviour
             return;
         }
 
-        players.ForEach(p =>
+        _players.ForEach(p =>
         {
             p.SetLaserTarget(BarrierScript.GetPointsTransforms(barrierLevel));
         });
@@ -340,6 +341,13 @@ public class BossController : MonoBehaviour
     public static void DoShake()
     {
         Instance.bossBody.DOShakePosition(0.5f, new Vector3(1, 1, 0), 10, 60);
+    }
+
+    public static void QuitPsychoPhase()
+    {
+        Instance._currentState = EBossState.NONE;
+        Instance._backgroundAnimator.SetBool("Psycho", false);
+        Instance.StartCoroutine(Instance.DelayState(EBossState.ATTACK_DISQUE, 1f));
     }
     
     #endregion

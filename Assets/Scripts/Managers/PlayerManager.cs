@@ -37,9 +37,6 @@ public class PlayerManager : MonoBehaviour
     public static float Timer { get; private set; }
     [SerializeField] public List<float> scores = new(5);
 
-    public GameObject Projectile;
-
-
 
     [Serializable]
     public class PlayerInfo

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Serialization;
 using UnityEngine.UI;
+using DG.Tweening;
 
 public class PlayerScript : MonoBehaviour
 {
@@ -100,9 +101,15 @@ public class PlayerScript : MonoBehaviour
             case BossController.EBossState.HYPNOTIC_PHASE:
                 if (isPressed)
                 {
-                    InstanciateBeam(color);
-                    BossController.OnPlayerInput(_info.ID, color);
-                    StartCoroutine(BeamFade());
+                    if (_beam != null)
+                    {
+                        _beam.DOKill();
+                        _beam.DOColor(PlayerManager.GetInputColor(color), 0.4f);
+                    }
+                    else
+                        InstanciateBeam(color);
+
+                    BarrierScript.OnBeamHitWall(_info.ID, color, _beam);
                 }
                 break;
 

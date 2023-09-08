@@ -6,17 +6,188 @@ using UnityEngine;
 using UnityEngine.Serialization;
 using UnityEngine.UI;
 using Random = UnityEngine.Random;
+using DG.Tweening;
 
 public class BarrierScript : MonoBehaviour
 {
     private static BarrierScript _instance;
-    
+
+    // ---------------------- New Version -------------------------- //
+
+    [System.Serializable]
+    public class WallInfo
+    {
+        public Transform PosWall1;
+        public Transform PosWall2;
+
+        [HideInInspector] public (Image, EButtonColor, bool) Wall1;
+        [HideInInspector] public (Image, EButtonColor, bool) Wall2;
+        [HideInInspector] public List<Image> BeamsHit = new List<Image>();
+    }
+
+    [SerializeField] private GameObject _outsideWallPrefab;
+    [SerializeField] private GameObject _neutralOutsideWallPrefab;
+    [SerializeField] private GameObject _insideWallPrefab;
+    [SerializeField] private GameObject _neutralInsideWallPrefab;
+    [SerializeField] private List<WallInfo> _wallInfos;
+
+    int _remainingWall;
+
+    public static List<Transform> GetBarriereTargetPos(bool outsideWall)
+    {
+        List<Transform> position = new List<Transform>();
+        for (int i = 0; i < _instance._wallInfos.Count; i++)
+        {
+            if (outsideWall)
+                position.Add(_instance._wallInfos[i].PosWall1);
+            else
+                position.Add(_instance._wallInfos[i].PosWall2);
+        }
+        return position;
+    }
+
+    public static void InitBarrierVisuals()
+    {
+        _instance._remainingWall = 2;
+        _instance._wallInfos.ForEach(b => { b.Wall1.Item2 = EButtonColor.NONE; b.Wall2.Item2 = EButtonColor.NONE; });
+
+        List<Transform> targets = GetBarriereTargetPos(true);
+        for (int i = 0; i < BossController.Players.Count; i++)
+        {
+            BossController.Players[i].SetLaserTarget(targets[i]);
+        }
+
+        List<int> playerWall = new List<int> { 0, 1, 2, 3 };
+        playerWall.RemoveAt(Random.Range(0, 4));
+
+        for (int i = 0; i < 4; i++)
+        {
+            bool exist = playerWall.Exists(p => p == i);
+            GameObject wall = Instantiate<GameObject>( exist ? _instance._outsideWallPrefab : _instance._neutralOutsideWallPrefab, _instance.gameObject.transform);
+            wall.transform.localRotation = Quaternion.Euler(0, 0, i * 90);
+            _instance._wallInfos[i].Wall1.Item1 = wall.GetComponent<Image>();
+            _instance._wallInfos[i].Wall1.Item3 = exist;
+        }
+
+        playerWall = new List<int> { 0, 1, 2, 3 };
+        playerWall.RemoveAt(Random.Range(0, 4));
+
+        for (int i = 0; i < 4; i++)
+        {
+            bool exist = playerWall.Exists(p => p == i);
+            GameObject wall = Instantiate<GameObject>(exist ? _instance._insideWallPrefab : _instance._neutralInsideWallPrefab, _instance.gameObject.transform);
+            wall.transform.localRotation = Quaternion.Euler(0, 0, i * 90);
+            _instance._wallInfos[i].Wall2.Item1 = wall.GetComponent<Image>();
+            _instance._wallInfos[i].Wall2.Item3 = exist;
+        }
+    }
+
+    public static void OnBeamHitWall(int playerID, EButtonColor color, Image Beam)
+    {
+        if (_instance._remainingWall == 0) return;
+
+        if(!_instance._wallInfos[playerID].BeamsHit.Contains(Beam))
+            _instance._wallInfos[playerID].BeamsHit.Add(Beam);
+
+        EButtonColor sameColor = EButtonColor.NONE;
+        bool breakDisque = true;
+        bool allHit = true;
+
+        if (_instance._remainingWall == 2)
+        {
+            _instance._wallInfos[playerID].Wall1.Item1.color = PlayerManager.GetInputColor(color);
+            _instance._wallInfos[playerID].Wall1.Item2 = color;
+
+            _instance._wallInfos.ForEach(wall =>
+            {
+                if (wall.Wall1.Item3)
+                {
+                    if (wall.Wall1.Item2 == EButtonColor.NONE)
+                    {
+                        allHit = false;
+                    }
+                    else if (sameColor == EButtonColor.NONE)
+                    {
+                        sameColor = wall.Wall1.Item2;
+                    }
+                    else if (sameColor != wall.Wall1.Item2)
+                    {
+                        breakDisque = false;
+                    }
+                }
+            });
+        }
+        else
+        {
+            _instance._wallInfos[playerID].Wall2.Item1.color = PlayerManager.GetInputColor(color);
+            _instance._wallInfos[playerID].Wall2.Item2 = color;
+
+            _instance._wallInfos.ForEach(wall =>
+            {
+                if (wall.Wall2.Item3)
+                {
+                    if (wall.Wall2.Item2 == EButtonColor.NONE)
+                    {
+                        allHit = false;
+                    }
+                    else if (sameColor == EButtonColor.NONE)
+                    {
+                        sameColor = wall.Wall2.Item2;
+                    }
+                    else if (sameColor != wall.Wall2.Item2)
+                    {
+                        breakDisque = false;
+                    }
+                }
+            });
+
+            if (allHit)
+            {
+                if (breakDisque)
+                {
+                    if(--_instance._remainingWall == 0)
+                    {
+                        // Exit Mode
+                        BossController.QuitPsychoPhase();
+                    }
+                    else
+                    {
+                        List<Transform> targets = GetBarriereTargetPos(false);
+                        for (int i = 0; i < BossController.Players.Count; i++)
+                        {
+                            BossController.Players[i].SetLaserTarget(targets[i]);
+                        }
+                    }
+                }
+                else
+                {
+                    // Reinitialisation
+                    _instance._wallInfos.ForEach(Wall =>
+                    {
+                        Wall.BeamsHit.ForEach(beam => Destroy(beam.gameObject));
+
+                        if (_instance._remainingWall == 2)
+                        {
+                            Wall.Wall1.Item1.DOColor(Color.white, 0.2f);
+                            Wall.Wall1.Item2 = EButtonColor.NONE;
+                        }
+                        else
+                        {
+                            Wall.Wall2.Item1.DOColor(Color.white, 0.2f);
+                            Wall.Wall2.Item2 = EButtonColor.NONE;
+                        }
+                    });
+                }
+            }
+        }
+    }
+
+    // ---------------------- Last Version ------------------------- //
+
     private List<List<Image>> Balls = new();
 
-    [FormerlySerializedAs("barrier1")] [SerializeField]
-    private List<Image> barrier1Imgs;
-    [FormerlySerializedAs("barrier2")] [SerializeField]
-    private List<Image> barrier2Imgs;
+    [FormerlySerializedAs("barrier1"), SerializeField] private List<Image> barrier1Imgs;
+    [FormerlySerializedAs("barrier2"), SerializeField] private List<Image> barrier2Imgs;
 
     [SerializeField] private List<GameObject> barriers;
 
